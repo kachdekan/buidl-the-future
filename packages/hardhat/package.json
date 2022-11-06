@@ -1,0 +1,9 @@
+{
+  "name": "@buidl-the-future/hardhat",
+  "version": "1.0.0",
+  "license": "Apache v2.0",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "hardhat": "^2.12.2"
+  }
+}

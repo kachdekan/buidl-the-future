@@ -1,0 +1,31 @@
+{
+  "name": "@buidl-the-future/monorepo",
+  "version": "1.0.0",
+  "description": "A submission for the Global Hack for Web3 sponsored by XDC, Klaytn, Aleo, Unstoppable Domains, and Lbank.",
+  "main": "index.js",
+  "repository": "https://github.com/kachdekan/buidl-the-future.git",
+  "author": "Kachi <kachdekan@gmail.com>",
+  "license": "Apache v2.0",
+  "private": true,
+  "homepage": "https://github.com/kachdekan/buidl-the-future#readme",
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/@expo/vector-icons"
+    ]
+  },
+  "scripts": {
+    "hardhat:test": "yarn workspace @buidl-the-future/hardhat test",
+    "hardhat:deploy": "yarn workspace @buidl-the-future/hardhat deploy",
+    "hardhat:watch": "yarn workspace @buidl-the-future/hardhat watch",
+    "hardhat:accounts": "yarn workspace @buidl-the-future/hardhat accounts",
+    "hardhat:devchain": "yarn workspace @buidl-the-future/hardhat devchain",
+    "hardhat:fork-mainnet": "yarn workspace @buidl-the-future/hardhat fork-mainnet",
+    "hardhat:deploy-reset-watch": "yarn workspace @buidl-the-future/hardhat deploy-reset-watch",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare-hardhat": "cd packages/hardhat && yarn && npx hardhat typechain && yarn deploy",
+    "build-ui": "yarn prepare-hardhat && cd packages/dapp && yarn && yarn build"
+  }
+}
