@@ -26,6 +26,6 @@
     "hardhat:deploy-reset-watch": "yarn workspace @buidl-the-future/hardhat deploy-reset-watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare-hardhat": "cd packages/hardhat && yarn && npx hardhat typechain && yarn deploy",
-    "build-ui": "yarn prepare-hardhat && cd packages/dapp && yarn && yarn build"
+    "build-ui": "yarn prepare-hardhat && cd packages/xdapp && yarn && yarn build"
   }
 }
