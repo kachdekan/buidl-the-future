@@ -21,8 +21,8 @@ export const theme = extendTheme({
       // Can simply pass default props to change default behaviour of components.
       sizes: {
         sm: {
-          px: '3',
-          py: '2',
+          px: '4',
+          py: '3',
           _text: {
             fontSize: 'sm',
           },
@@ -33,6 +33,7 @@ export const theme = extendTheme({
       },
       defaultProps: {
         size: 'sm',
+        colorScheme: 'warmGray',
       },
     },
   },
