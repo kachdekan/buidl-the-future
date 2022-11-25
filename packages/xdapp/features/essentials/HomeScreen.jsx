@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Feather, Ionicons } from '@expo/vector-icons'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { FeatureHomeCard, TransactionItem } from 'xdapp/components'
+import { FeatureHomeCard, TransactionItem, NewsItem } from 'xdapp/components'
 
 export default function HomeScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false)
@@ -48,14 +48,44 @@ export default function HomeScreen({ navigation }) {
     },
   ]
 
+  const news = [
+    {
+      id: 'Ax675',
+      imgLink:
+        'https://images.unsplash.com/photo-1579621970795-87facc2f976d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+      title: "Bitcoin's rocky road to becoming a risk-off asset: Analysts investigate",
+      time: '16:07',
+      publisher: 'The Cointelegraph',
+      link: 'https://example.com',
+    },
+    {
+      id: 'Ax680',
+      imgLink:
+        'https://images.unsplash.com/photo-1579621970795-87facc2f976d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+      title: "Bitcoin's rocky road to becoming a risk-off asset: Analysts investigate",
+      time: '16:07',
+      publisher: 'The Cointelegraph',
+      link: 'https://example.com',
+    },
+    {
+      id: 'Ax685',
+      imgLink:
+        'https://images.unsplash.com/photo-1579621970795-87facc2f976d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+      title: "Bitcoin's rocky road to becoming a risk-off asset: Analysts investigate",
+      time: '16:07',
+      publisher: 'The Cointelegraph',
+      link: 'https://example.com',
+    },
+  ]
+
   return (
     <Box flex={1} bg="primary.50" alignItems="center">
       <FlatList
-        width="95%"
         data={transactions}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <>
+          <Box width="95%" mx="2.5%">
             <FeatureHomeCard
               balance={totalBalance.toFixed(4).toString()}
               apprxBalance={(totalBalance * 120.75).toFixed(2).toString()}
@@ -74,7 +104,7 @@ export default function HomeScreen({ navigation }) {
             />
             {transactions.length > 0 ? (
               <HStack justifyContent="space-between" mx={4} mt={3} mb={2}>
-                <Text fontWeight="medium" color="blueGray.600">
+                <Text fontWeight="medium" color="warmGray.800">
                   Transactions
                 </Text>
                 <Pressable onPress={() => navigation.navigate('DummyModal')}>
@@ -84,10 +114,12 @@ export default function HomeScreen({ navigation }) {
                 </Pressable>
               </HStack>
             ) : null}
-          </>
+          </Box>
         }
         renderItem={({ item, index }) => (
           <Box
+            width="95%"
+            mx="2.5%"
             bg="white"
             opacity={85}
             roundedTop={index == 0 ? '2xl' : 'md'}
@@ -107,6 +139,41 @@ export default function HomeScreen({ navigation }) {
           </Box>
         )}
         keyExtractor={(item) => item.tx}
+        ListFooterComponent={
+          <>
+            <Box width="95%" mx="2.5%">
+              <HStack justifyContent="space-between" mx={4} mt={4} mb={2}>
+                <Text fontWeight="medium" color="warmGray.800">
+                  Some news for you
+                </Text>
+                <Pressable onPress={() => navigation.navigate('DummyModal')}>
+                  <Text fontWeight="medium" color="primary.400">
+                    Read all
+                  </Text>
+                </Pressable>
+              </HStack>
+            </Box>
+            <FlatList
+              data={news}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              mt={1}
+              mb={4}
+              renderItem={({ item, index }) => (
+                <Box maxH="50%" ml={index == 0 ? 2 : 1} mr={index == 2 ? 2 : 1}>
+                  <NewsItem
+                    imgLink={item.imgLink}
+                    title={item.title}
+                    time={item.time}
+                    publisher={item.publisher}
+                    link={item.link}
+                  />
+                </Box>
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </>
+        }
       />
     </Box>
   )
