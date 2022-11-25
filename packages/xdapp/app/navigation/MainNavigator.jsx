@@ -23,7 +23,7 @@ export default function MainNavigator() {
         options={{ headerShown: false }}
       />
       <MainStack.Group
-        screenOptions={{ presentation: 'modal', headerStyle: { backgroundColor: '#FFF7ED' } }}
+        screenOptions={{ presentation: 'modal', headerStyle: { backgroundColor: '#FFFAF5' } }}
       >
         <MainStack.Screen name="Account" component={AccountScreen} />
         <MainStack.Screen name="DummyModal" component={DummyScreen} />
@@ -53,7 +53,7 @@ function BottomTabNavigator() {
           tabBarIcon: ({ focused }) => (
             <TabBarIcon
               name={focused ? 'home-3-fill' : 'home-3-line'}
-              bgc={focused ? 'primary.200' : 'primary.50'}
+              bgc={focused ? 'primary.200' : '#FFF7ED'}
               color="#292524"
             />
           ),
@@ -74,7 +74,7 @@ function BottomTabNavigator() {
           tabBarIcon: ({ focused }) => (
             <TabBarIcon
               name={focused ? 'safe-2-fill' : 'safe-2-line'}
-              bgc={focused ? 'primary.200' : 'primary.50'}
+              bgc={focused ? 'primary.200' : '#FFF7ED'}
               color="#292524"
             />
           ),
@@ -95,7 +95,7 @@ function BottomTabNavigator() {
           tabBarIcon: ({ focused }) => (
             <TabBarIcon
               name={focused ? 'user-3-fill' : 'user-3-line'}
-              bgc={focused ? 'primary.200' : 'primary.50'}
+              bgc={focused ? 'primary.200' : '#FFF7ED'}
               color="#292524"
             />
           ),

@@ -12,7 +12,7 @@ export default function AuthNavigator() {
     <AuthStack.Navigator initialRouteName="Welcome">
       <AuthStack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
       <AuthStack.Group
-        screenOptions={{ presentation: 'modal', headerStyle: { backgroundColor: '#FFF7ED' } }}
+        screenOptions={{ presentation: 'modal', headerStyle: { backgroundColor: '#FFFAF5' } }}
       >
         <AuthStack.Screen name="DummyModal" component={DummyScreen} />
       </AuthStack.Group>

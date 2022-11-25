@@ -4,7 +4,7 @@ export const theme = extendTheme({
   colors: {
     // Add new color
     primary: {
-      50: '#FFF7ED',
+      50: '#FFFAF5',
       100: '#FFEDD5',
       200: '#FED7AA',
       300: '#FDBA74',
@@ -21,6 +21,16 @@ export const theme = extendTheme({
       // Can simply pass default props to change default behaviour of components.
       sizes: {
         sm: {
+          px: '3',
+          py: '2',
+          _text: {
+            fontSize: 'sm',
+          },
+          _icon: {
+            size: 'md',
+          },
+        },
+        md: {
           px: '4',
           py: '3',
           _text: {
@@ -32,7 +42,7 @@ export const theme = extendTheme({
         },
       },
       defaultProps: {
-        size: 'sm',
+        size: 'md',
         colorScheme: 'warmGray',
       },
     },
