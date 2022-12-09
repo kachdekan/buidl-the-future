@@ -10,7 +10,13 @@ const {DEV_MNEMONIC, ACC1, ACC2} = process.env
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.17",
+  solidity: {
+    compilers: [
+      {
+        version: "0.8.17",
+      },
+    ],
+  },
   defaultNetwork,
   paths: {
     deploy: './scripts',
