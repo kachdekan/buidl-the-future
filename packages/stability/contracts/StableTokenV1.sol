@@ -6,16 +6,17 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./common/Initializable.sol";
-import "./common/FixidityLib.sol";
-import "./common/UsingPrecompiles.sol";
+
+//import "./common/FixidityLib.sol";
+//import "./common/UsingPrecompiles.sol";
 
 /**
  * @title An ERC20 compliant token with adjustable supply.
  */
 
-contract StableToken is IERC20, Ownable, Initializable, UsingPrecompiles {
+contract StableTokenV1 is IERC20, Ownable, Initializable {
     using SafeMath for uint256;
-    using FixidityLib for FixidityLib.Fraction;
+    //using FixidityLib for FixidityLib.Fraction;
 
     string internal name_;
     string internal symbol_;
@@ -40,14 +41,14 @@ contract StableToken is IERC20, Ownable, Initializable, UsingPrecompiles {
     event TransferComment(string comment);
 
     // STABILITY FEE PARAMETERS
-
+    uint256 private constant FIXED1_UINT = 100000; //1
     // The `rate` is how much the `factor` is adjusted by per `updatePeriod`.
-    // The `factor` describes units/value of StableToken, and is greater than or equal to 1.
+    // The `factor` describes units of StableToken, and is greater than or equal to 1.
     // The `updatePeriod` governs how often the `factor` is updated.
     // `factorLastUpdated` indicates when the inflation factor was last updated.
     struct InflationState {
-        FixidityLib.Fraction rate;
-        FixidityLib.Fraction factor;
+        uint256 rate;
+        uint256 factor; //100_000
         uint256 updatePeriod;
         uint256 factorLastUpdated;
     }
@@ -59,7 +60,7 @@ contract StableToken is IERC20, Ownable, Initializable, UsingPrecompiles {
      * has passed since last update.
      */
     modifier updateInflationFactor() {
-        FixidityLib.Fraction memory updatedInflationFactor;
+        uint256 updatedInflationFactor;
         uint256 lastUpdated;
 
         (updatedInflationFactor, lastUpdated) = getUpdatedInflationFactor();
@@ -68,7 +69,7 @@ contract StableToken is IERC20, Ownable, Initializable, UsingPrecompiles {
             inflationState.factor = updatedInflationFactor;
             inflationState.factorLastUpdated = lastUpdated;
             emit InflationFactorUpdated(
-                inflationState.factor.unwrap(),
+                inflationState.factor,
                 inflationState.factorLastUpdated
             );
         }
@@ -126,8 +127,8 @@ contract StableToken is IERC20, Ownable, Initializable, UsingPrecompiles {
         symbol_ = _symbol;
         decimals_ = _decimals;
 
-        inflationState.rate = FixidityLib.wrap(inflationRate);
-        inflationState.factor = FixidityLib.fixed1();
+        inflationState.rate = inflationRate;
+        inflationState.factor = FIXED1_UINT;
         inflationState.updatePeriod = inflationFactorUpdatePeriod;
         inflationState.factorLastUpdated = block.timestamp;
 
@@ -350,7 +351,7 @@ contract StableToken is IERC20, Ownable, Initializable, UsingPrecompiles {
     ) external onlyOwner updateInflationFactor {
         require(rate != 0, "Must provide a non-zero inflation rate.");
         require(updatePeriod > 0, "updatePeriod must be > 0");
-        inflationState.rate = FixidityLib.wrap(rate);
+        inflationState.rate = rate;
         inflationState.updatePeriod = updatePeriod;
         emit InflationParametersUpdated(rate, updatePeriod, block.timestamp);
     }
@@ -368,22 +369,22 @@ contract StableToken is IERC20, Ownable, Initializable, UsingPrecompiles {
         returns (uint256, uint256, uint256, uint256)
     {
         return (
-            inflationState.rate.unwrap(),
-            inflationState.factor.unwrap(),
+            inflationState.rate,
+            inflationState.factor,
             inflationState.updatePeriod,
             inflationState.factorLastUpdated
         );
     }
 
     /**
-     * @notice Computes the up-to-date inflation factor.
+     * @notice Computes the up-to-date inflation factor. //OverFlows at timesToApplyInflation = 14
      * @return Current inflation factor.
      * @return Last time when the returned inflation factor was updated.
      */
     function getUpdatedInflationFactor()
-        public
+        private
         view
-        returns (FixidityLib.Fraction memory, uint256)
+        returns (uint256, uint256)
     {
         if (
             block.timestamp <
@@ -392,33 +393,31 @@ contract StableToken is IERC20, Ownable, Initializable, UsingPrecompiles {
             return (inflationState.factor, inflationState.factorLastUpdated);
         }
 
-        uint256 numerator;
-        uint256 denominator;
-
+        uint256 currentInflationFactor;
         // TODO: handle retroactive updates given decreases to updatePeriod
         uint256 timesToApplyInflation = block
             .timestamp
             .sub(inflationState.factorLastUpdated)
             .div(inflationState.updatePeriod);
 
-        (numerator, denominator) = fractionMulExp(
-            inflationState.factor.unwrap(),
-            FixidityLib.fixed1().unwrap(),
-            inflationState.rate.unwrap(),
-            FixidityLib.fixed1().unwrap(),
-            timesToApplyInflation,
-            decimals_
-        );
-
-        // This should never happen. If something went wrong updating the
-        // inflation factor, keep the previous factor
-        if (numerator == 0 || denominator == 0) {
-            return (inflationState.factor, inflationState.factorLastUpdated);
+        if (timesToApplyInflation > 1) {
+            currentInflationFactor = inflationState
+                .factor
+                .mul(
+                    ((FIXED1_UINT.add(inflationState.rate.div(100))) **
+                        timesToApplyInflation).div(FIXED1_UINT)
+                )
+                .div(FIXED1_UINT ** (timesToApplyInflation - 1));
+        } else {
+            currentInflationFactor = inflationState
+                .factor
+                .mul(
+                    ((FIXED1_UINT.add(inflationState.rate.div(100))) **
+                        timesToApplyInflation)
+                )
+                .div(FIXED1_UINT);
         }
 
-        FixidityLib.Fraction memory currentInflationFactor = FixidityLib
-            .wrap(numerator)
-            .divide(FixidityLib.wrap(denominator));
         uint256 lastUpdated = inflationState.factorLastUpdated.add(
             inflationState.updatePeriod.mul(timesToApplyInflation)
         );
@@ -434,7 +433,7 @@ contract StableToken is IERC20, Ownable, Initializable, UsingPrecompiles {
      * we assume any function calling this will have updated the inflation factor.
      */
     function valueToUnits(uint256 value) external view returns (uint256) {
-        FixidityLib.Fraction memory updatedInflationFactor;
+        uint256 updatedInflationFactor;
 
         (updatedInflationFactor, ) = getUpdatedInflationFactor();
         return _valueToUnits(updatedInflationFactor, value);
@@ -448,11 +447,10 @@ contract StableToken is IERC20, Ownable, Initializable, UsingPrecompiles {
      * @dev We assume any function calling this will have updated the inflation factor.
      */
     function _valueToUnits(
-        FixidityLib.Fraction memory inflationFactor,
+        uint256 inflationFactor,
         uint256 value
     ) private pure returns (uint256) {
-        return
-            inflationFactor.multiply(FixidityLib.newFixed(value)).fromFixed();
+        return (inflationFactor.mul(value)).div(FIXED1_UINT);
     }
 
     /**
@@ -461,20 +459,11 @@ contract StableToken is IERC20, Ownable, Initializable, UsingPrecompiles {
      * @return The value corresponding to `units` given the current inflation factor.
      */
     function unitsToValue(uint256 units) public view returns (uint256) {
-        FixidityLib.Fraction memory updatedInflationFactor;
+        uint256 updatedInflationFactor;
 
         (updatedInflationFactor, ) = getUpdatedInflationFactor();
 
-        // We're ok using FixidityLib.divide here because updatedInflationFactor is
-        // not going to surpass maxFixedDivisor any time soon.
-        // Quick upper-bound estimation: if annual inflation were 5% (an order of
-        // magnitude more than the initial proposal of 0.5%), in 500 years, the
-        // inflation factor would be on the order of 10**10, which is still a safe
-        // divisor.
-        return
-            FixidityLib
-                .newFixed(units)
-                .divide(updatedInflationFactor)
-                .fromFixed();
+        // Possible overflow issues
+        return (units.mul(FIXED1_UINT)).div(updatedInflationFactor);
     }
 }

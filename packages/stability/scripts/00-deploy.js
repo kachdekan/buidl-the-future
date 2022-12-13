@@ -9,7 +9,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   const lockedAmount = utils.parseEther("1");
 
-  await deploy('StableToken', {
+  await deploy('StableTokenV1', {
     from: deployer,
     args: [true],
     //value: lockedAmount,
@@ -17,4 +17,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   })
 }
 
-module.exports.tags = ['StableToken']
+module.exports.tags = ['StableTokenV1']

@@ -28,9 +28,9 @@ module.exports = {
         path: mnemonicPath,
         count: 5,
       },
-      forking: {
-        url: 'https://erpc.xinfin.network/'
-      }
+      //forking: {
+       // url: 'https://erpc.xinfin.network/'
+      //}
     },
     localhost: {
       url: 'http://127.0.0.1:7545',
