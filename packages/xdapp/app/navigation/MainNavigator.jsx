@@ -9,7 +9,7 @@ import Icon from 'react-native-remix-icon' //Fix/Add types
 //Screens
 import { HomeScreen, DummyScreen } from 'xdapp/features/essentials'
 import { AccountScreen } from 'xdapp/features/account'
-import { SpacesHomeScreen } from 'xdapp/features/spaces'
+import { SpacesHomeScreen, SpacesTabsNavigator } from 'xdapp/features/spaces'
 import { useSelector } from 'react-redux'
 
 const MainStack = createNativeStackNavigator()
@@ -26,6 +26,7 @@ export default function MainNavigator() {
         screenOptions={{ presentation: 'modal', headerStyle: { backgroundColor: '#FFFAF5' } }}
       >
         <MainStack.Screen name="Account" component={AccountScreen} />
+        <MainStack.Screen name="MySpaces" component={SpacesTabsNavigator} />
         <MainStack.Screen name="DummyModal" component={DummyScreen} />
       </MainStack.Group>
     </MainStack.Navigator>

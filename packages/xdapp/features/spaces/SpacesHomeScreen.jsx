@@ -1,10 +1,10 @@
-import { Box, Text, FlatList, Icon, HStack, VStack, Avatar, Stack } from 'native-base'
+import { Box, Text, FlatList, Icon, HStack, VStack, Avatar, Stack, Pressable } from 'native-base'
 import { useState, useEffect, useCallback } from 'react'
 import { RefreshControl } from 'react-native'
 import { FeatureHomeCard, FeatureItem } from 'xdapp/components'
 import { Feather, Ionicons, MaterialIcons } from '@expo/vector-icons'
 
-export default function SpacesHomeScreen() {
+export default function SpacesHomeScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false)
   const totalBalance = 0
 
@@ -81,96 +81,109 @@ export default function SpacesHomeScreen() {
         ListFooterComponent={
           <>
             <HStack mx={1} justifyContent="space-between" my={4}>
-              <VStack
-                bg="white"
+              <Pressable
                 width="48%"
-                space="6"
-                p={4}
-                borderRadius="2xl"
-                borderWidth={2}
-                borderColor="gray.100"
+                onPress={() => navigation.navigate('MySpaces', { screen: 'Challenges' })}
               >
-                <HStack justifyContent="space-between" alignItems="center">
-                  <Avatar bg="violet.500">
-                    <Icon as={MaterialIcons} name="bubble-chart" size="2xl" color="text.50" />
-                  </Avatar>
-                  <Text fontSize="md">$0.00</Text>
-                </HStack>
-                <Stack>
-                  <Text fontSize="md" fontWeight="medium">
-                    Challenges
-                  </Text>
-                  <Text color="muted.500">Be competitive</Text>
-                </Stack>
-              </VStack>
-              <VStack
-                bg="white"
+                <VStack
+                  bg="white"
+                  space="6"
+                  p={4}
+                  borderRadius="2xl"
+                  borderWidth={2}
+                  borderColor="gray.100"
+                >
+                  <HStack justifyContent="space-between" alignItems="center">
+                    <Avatar bg="violet.500">
+                      <Icon as={MaterialIcons} name="bubble-chart" size="2xl" color="text.50" />
+                    </Avatar>
+                    <Text fontSize="md">$0.00</Text>
+                  </HStack>
+                  <Stack>
+                    <Text fontSize="md" fontWeight="medium">
+                      Challenges
+                    </Text>
+                    <Text color="muted.500">Be competitive</Text>
+                  </Stack>
+                </VStack>
+              </Pressable>
+              <Pressable
                 width="48%"
-                space="6"
-                p={4}
-                borderRadius="2xl"
-                borderWidth={2}
-                borderColor="gray.100"
+                onPress={() => navigation.navigate('MySpaces', { screen: 'Personal' })}
               >
-                <HStack justifyContent="space-between" alignItems="center">
-                  <Avatar bg="teal.500">
-                    <Icon as={MaterialIcons} name="lock-clock" size="xl" color="text.50" />
-                  </Avatar>
-                  <Text fontSize="md">$0.00</Text>
-                </HStack>
-                <Stack>
-                  <Text fontSize="md" fontWeight="medium">
-                    Personal
-                  </Text>
-                  <Text color="muted.500">Save for a goal</Text>
-                </Stack>
-              </VStack>
+                <VStack
+                  bg="white"
+                  space="6"
+                  p={4}
+                  borderRadius="2xl"
+                  borderWidth={2}
+                  borderColor="gray.100"
+                >
+                  <HStack justifyContent="space-between" alignItems="center">
+                    <Avatar bg="teal.500">
+                      <Icon as={MaterialIcons} name="lock-clock" size="xl" color="text.50" />
+                    </Avatar>
+                    <Text fontSize="md">$0.00</Text>
+                  </HStack>
+                  <Stack>
+                    <Text fontSize="md" fontWeight="medium">
+                      Personal
+                    </Text>
+                    <Text color="muted.500">Save for a goal</Text>
+                  </Stack>
+                </VStack>
+              </Pressable>
             </HStack>
             <HStack mx={1} justifyContent="space-between" mb={4}>
-              <VStack
-                bg="white"
+              <Pressable
                 width="48%"
-                space="6"
-                p={4}
-                borderRadius="2xl"
-                borderWidth={2}
-                borderColor="gray.100"
+                onPress={() => navigation.navigate('MySpaces', { screen: 'Groups' })}
               >
-                <HStack justifyContent="space-between" alignItems="center">
-                  <Avatar bg="green.500">
-                    <Icon as={MaterialIcons} name="groups" size="xl" color="text.50" />
-                  </Avatar>
-                  <Text fontSize="md">$0.00</Text>
-                </HStack>
-                <Stack>
-                  <Text fontSize="md" fontWeight="medium">
-                    Groups
-                  </Text>
-                  <Text color="muted.500">Save with friends</Text>
-                </Stack>
-              </VStack>
-              <VStack
-                bg="white"
-                width="48%"
-                space="6"
-                p={4}
-                borderRadius="2xl"
-                borderWidth={2}
-                borderColor="gray.100"
-              >
-                <HStack justifyContent="space-between" alignItems="center">
-                  <Avatar bg="yellow.500">
-                    <Icon as={MaterialIcons} name="group-add" size="xl" color="text.50" />
-                  </Avatar>
-                  <Text fontSize="md">0</Text>
-                </HStack>
-                <Stack>
-                  <Text fontSize="md" fontWeight="medium">
-                    Invites
-                  </Text>
-                  <Text color="muted.500">Join your crew</Text>
-                </Stack>
-              </VStack>
+                <VStack
+                  bg="white"
+                  space="6"
+                  p={4}
+                  borderRadius="2xl"
+                  borderWidth={2}
+                  borderColor="gray.100"
+                >
+                  <HStack justifyContent="space-between" alignItems="center">
+                    <Avatar bg="green.500">
+                      <Icon as={MaterialIcons} name="groups" size="xl" color="text.50" />
+                    </Avatar>
+                    <Text fontSize="md">$0.00</Text>
+                  </HStack>
+                  <Stack>
+                    <Text fontSize="md" fontWeight="medium">
+                      Groups
+                    </Text>
+                    <Text color="muted.500">Save with friends</Text>
+                  </Stack>
+                </VStack>
+              </Pressable>
+              <Pressable width="48%" onPress={() => navigation.navigate('DummyModal')}>
+                <VStack
+                  bg="white"
+                  space="6"
+                  p={4}
+                  borderRadius="2xl"
+                  borderWidth={2}
+                  borderColor="gray.100"
+                >
+                  <HStack justifyContent="space-between" alignItems="center">
+                    <Avatar bg="yellow.500">
+                      <Icon as={MaterialIcons} name="group-add" size="xl" color="text.50" />
+                    </Avatar>
+                    <Text fontSize="md">0</Text>
+                  </HStack>
+                  <Stack>
+                    <Text fontSize="md" fontWeight="medium">
+                      Invites
+                    </Text>
+                    <Text color="muted.500">Join your crew</Text>
+                  </Stack>
+                </VStack>
+              </Pressable>
             </HStack>
           </>
         }
