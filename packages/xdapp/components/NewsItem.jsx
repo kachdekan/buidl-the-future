@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native'
 const NewsItem = (props) => {
   const navigation = useNavigation()
   return (
-    <Pressable onPress={() => navigation.navigate('DummyScreen')}>
+    <Pressable onPress={() => navigation.navigate('DummyModal')}>
       <VStack p={3} space={3} rounded="2xl" w="175" bg="white">
         <AspectRatio
           ratio={{
