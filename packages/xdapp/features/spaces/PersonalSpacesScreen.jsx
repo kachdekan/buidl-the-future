@@ -90,7 +90,7 @@ export default function PersonalSpacesScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <SectionHeader title="Popular Savings" screen="DummyModal" link="Create New" />
+            <SectionHeader title="Popular Savings" screen="createSpace" link="Create New" />
             <FlatList
               data={popularItems}
               horizontal={true}

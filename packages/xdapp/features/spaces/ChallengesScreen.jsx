@@ -91,7 +91,7 @@ export default function ChallengesScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <SectionHeader title="Popular Challenges" screen="DummyModal" link="Create New" />
+            <SectionHeader title="Popular Challenges" screen="createSpace" link="Create New" />
             <FlatList
               data={popularItems}
               horizontal={true}

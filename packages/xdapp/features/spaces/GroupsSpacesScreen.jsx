@@ -83,7 +83,7 @@ export default function GroupsSpacesScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <>
-            <SectionHeader title="Join a Group" screen="DummyModal" link="Create New" />
+            <SectionHeader title="Join a Group" screen="createSpace" link="Create New" />
             <FlatList
               data={popularItems}
               horizontal={true}
