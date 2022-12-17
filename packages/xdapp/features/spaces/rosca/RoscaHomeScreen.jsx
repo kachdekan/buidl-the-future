@@ -15,7 +15,7 @@ import { Feather } from '@expo/vector-icons'
 import { HeaderBackButton } from '@react-navigation/elements'
 import { useLayoutEffect, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-//import { getRoscaData } from './spacesSlice'
+import { getRoscaData } from '../spacesSlice'
 
 export default function RoscaHomeScreen({ navigation, route }) {
   const roscaAddress = route.params.roscaAddress
@@ -25,7 +25,7 @@ export default function RoscaHomeScreen({ navigation, route }) {
   const [isFetching, setIsFetching] = useState(false)
 
   useEffect(() => {
-    dispatch(getRoscaData(roscaAddress))
+    //dispatch(getRoscaData(roscaAddress))
   }, [])
 
   useLayoutEffect(() => {
@@ -35,7 +35,7 @@ export default function RoscaHomeScreen({ navigation, route }) {
           <HeaderBackButton
             {...props}
             onPress={() => {
-              navigation.navigate('Spaces')
+              navigation.navigate('MySpaces', { screen: 'Groups' })
             }}
           />
         )
@@ -61,7 +61,7 @@ export default function RoscaHomeScreen({ navigation, route }) {
         <Box bg="rgba(52, 52, 52, 0.3)" minW="2/3" rounded="lg">
           <Box p={3} minW="2/3">
             <Text fontSize="md" fontWeight="medium" color="white" lineHeight="xs">
-              Balance (cUSD)
+              Balance (UxSD)
             </Text>
             <Text fontSize="3xl" fontWeight="semibold" color="white">
               {roscaDetails.roscaBal}

@@ -1,25 +1,12 @@
-import {
-  Box,
-  Text,
-  Image,
-  FormControl,
-  Stack,
-  Input,
-  Button,
-  HStack,
-  VStack,
-  Select,
-  Avatar,
-  Spacer,
-} from 'native-base'
+import { Box, Text, Image, FormControl, Stack, Input, Button, HStack, Select } from 'native-base'
 import { CheckIcon } from 'native-base'
 import { useSelector, useDispatch } from 'react-redux'
 import { useState } from 'react'
-//import { setSpaceInfo } from './spacesSlice'
+import { setSpaceInfo } from './spacesSlice'
 
 export default function CreateSpaceScreen({ navigation }) {
   const suggestions = ['Savings', 'Vacation', 'Chama', 'Gift', 'Sherehe', 'Emergency', 'Masomo']
-  //const dispatch = useDispatch()
+  const dispatch = useDispatch()
   const [spaceName, setSpaceName] = useState('')
   const [spaceType, setSpaceType] = useState('')
 
@@ -100,7 +87,7 @@ export default function CreateSpaceScreen({ navigation }) {
             minW="75%"
             _text={{ color: 'text.50', fontWeight: 'semibold', mb: '0.5' }}
             onPress={() => {
-              //dispatch(setSpaceInfo({ spaceName, spaceType }))
+              dispatch(setSpaceInfo({ spaceName, spaceType }))
               navigation.navigate(nextScreen)
             }}
           >

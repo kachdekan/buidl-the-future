@@ -13,6 +13,7 @@ import {
   SelectContactsScreen,
   SetPersonalGoalScreen,
   SetRoscaGoalScreen,
+  RoscaHomeScreen,
 } from 'xdapp/features/spaces'
 import { useSelector } from 'react-redux'
 
@@ -35,6 +36,7 @@ export default function MainNavigator() {
         <MainStack.Screen name="selectContacts" component={SelectContactsScreen} />
         <MainStack.Screen name="setPersonalGoal" component={SetPersonalGoalScreen} />
         <MainStack.Screen name="setRoscaGoal" component={SetRoscaGoalScreen} />
+        <MainStack.Screen name="RoscaHome" component={RoscaHomeScreen} />
         <MainStack.Screen name="DummyModal" component={DummyScreen} />
       </MainStack.Group>
     </MainStack.Navigator>

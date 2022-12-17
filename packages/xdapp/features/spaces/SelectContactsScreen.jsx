@@ -3,13 +3,13 @@ import { Box, HStack, Text, Avatar, VStack, FlatList, Button } from 'native-base
 import { useDispatch } from 'react-redux'
 import * as Contacts from 'expo-contacts'
 import { TouchableOpacity } from 'react-native'
-//import { setSelectedMembers } from './spacesSlice'
+import { setSelectedMembers } from './spacesSlice'
 
 //TODO! Maintain unique selctions
 //TODO! Handle submissions.
 
 export default function SelectContactsScreen({ navigation }) {
-  //const dispatch = useDispatch()
+  const dispatch = useDispatch()
   const [selectedContacts, setSelectedContacts] = useState([])
   const [contactList, setContactList] = useState()
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function SelectContactsScreen({ navigation }) {
         w="60%"
         _text={{ color: 'text.900', fontWeight: 'semibold', mb: '0.5' }}
         onPress={() => {
-          //dispatch(setSelectedMembers(selectedContacts))
+          dispatch(setSelectedMembers(selectedContacts))
           navigation.navigate('setRoscaGoal')
         }}
       >
