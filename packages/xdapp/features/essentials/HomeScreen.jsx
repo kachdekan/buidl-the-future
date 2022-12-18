@@ -3,7 +3,7 @@ import { RefreshControl } from 'react-native'
 import { useState, useEffect, useCallback } from 'react'
 import { Feather, Ionicons } from '@expo/vector-icons'
 import { useSelector, useDispatch } from 'react-redux'
-
+import { connectToProvider, isProviderSet } from 'xdapp/blockchain/provider.js'
 import { FeatureHomeCard, TransactionItem, NewsItem } from 'xdapp/components'
 
 export default function HomeScreen({ navigation }) {
@@ -15,6 +15,7 @@ export default function HomeScreen({ navigation }) {
   }
 
   const onRefresh = useCallback(async () => {
+    connectToProvider()
     setRefreshing(true)
     wait(2000).then(async () => {
       setRefreshing(false)

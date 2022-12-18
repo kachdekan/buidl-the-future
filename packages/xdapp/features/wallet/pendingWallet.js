@@ -1,6 +1,6 @@
 import { Wallet } from 'ethers'
-import celoHelper from 'clixpesa/blockchain/helpers/celoHelper'
-import { normalizeMnemonic } from 'clixpesa/blockchain/utils/mnemonic'
+import { generateWalletFromMnemonic } from 'xdapp/blockchain/blockchainHelper'
+import { normalizeMnemonic } from 'xdapp/utils/mnemonic'
 
 // Used to temporarily hold keys for flows where
 // account creation/import is separate step than password set
@@ -14,7 +14,7 @@ export async function setPendingWallet(mnemonic, isImported = true) {
     console.warn('Overwriting existing pending account') //replace with degugging logger
   }
   const formattedMnemonic = normalizeMnemonic(mnemonic)
-  const importedWallet = await celoHelper.generateWalletFromMnemonic(formattedMnemonic)
+  const importedWallet = await generateWalletFromMnemonic(formattedMnemonic)
   pendingWallet = { importedWallet, isImported }
 }
 

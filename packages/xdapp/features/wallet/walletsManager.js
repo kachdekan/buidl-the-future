@@ -1,5 +1,5 @@
-import { WALLETS_STORE } from 'clixpesa/app/constants'
-import { getUserWallets } from 'clixpesa/app/storage'
+import { WALLETS_STORE } from '../../consts'
+import { getUserWallets } from 'xdapp/app/storage'
 
 export const walletsListCache = {}
 
