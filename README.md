@@ -1,2 +1,2 @@
-## An XDC DeFi Hackathon submission
-An effort to build the xDapp MVP on XDC Network. Including a stable token backed by XDC
+## A Buidl the Future submission
+A Global Hack for Web3 sponsored by XDC, Klaytn, Aleo, Unstoppable Domains, and Lbank.
