@@ -54,7 +54,6 @@ const essentialSlice = createSlice({
     },
     resetUserDetails: () => initialState,
   },
-  extraReducers: {},
 })
 
 export const {

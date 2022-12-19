@@ -9,8 +9,8 @@ import AuthNavigator from './AuthNavigator'
 const AppStack = createNativeStackNavigator()
 
 export default function AppNavigator() {
-  const isLoggedIn = true
-  //const isLoggedIn = useSelector((s) => s.essential.isLoggedIn)
+  //const isLoggedIn = true
+  const isLoggedIn = useSelector((s) => s.essential.isLoggedIn)
   return (
     //Use connecetion status to proceed and unlock plus has account to go to home
     <NavigationContainer>

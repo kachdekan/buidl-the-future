@@ -5,8 +5,10 @@ import walletReducer from '../features/wallet/walletSlice'
 import spacesReducer from '../features/spaces/spacesSlice'
 
 //import { essentialListeners } from '../features/essentials/essentialEffects'
-//import { walletListeners } from '../features/wallet/walletEffects'
+import { walletListeners } from '../features/wallet/walletEffects'
 //import { spacesListeners } from '../features/spaces/spacesEffects'
+
+import { blockscoutApi } from './services/blockscout'
 
 const listenerMiddleware = createListenerMiddleware()
 
@@ -15,12 +17,13 @@ export default configureStore({
     essential: essentialReducer,
     wallet: walletReducer,
     spaces: spacesReducer,
+    [blockscoutApi.reducerPath]: blockscoutApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().prepend(listenerMiddleware.middleware),
+    getDefaultMiddleware().prepend(listenerMiddleware.middleware, blockscoutApi.middleware),
 })
 
 //Listeners
 //essentialListeners(listenerMiddleware.startListening)
-//walletListeners(listenerMiddleware.startListening)
+walletListeners(listenerMiddleware.startListening)
 //spacesListeners(listenerMiddleware.startListening)
