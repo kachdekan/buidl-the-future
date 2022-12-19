@@ -1,1 +1,7 @@
 export { default as SpacesHomeScreen } from './SpacesHomeScreen'
+export { default as SpacesTabsNavigator } from './SpacesTabsNavigator'
+export { default as CreateSpaceScreen } from './CreateSpaceScreen'
+export { default as SelectContactsScreen } from './SelectContactsScreen'
+export { default as SetPersonalGoalScreen } from './personal/SetPersonalGoalScreen'
+export { default as SetRoscaGoalScreen } from './rosca/SetRoscaGoalScreen'
+export { default as RoscaHomeScreen } from './rosca/RoscaHomeScreen'

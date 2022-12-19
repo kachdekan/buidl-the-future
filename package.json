@@ -1,7 +1,7 @@
 {
   "name": "@buidl-the-future/monorepo",
   "version": "1.0.0",
-  "description": "A submission for the Global Hack for Web3 sponsored by XDC, Klaytn, Aleo, Unstoppable Domains, and Lbank.",
+  "description": "An effort to build the xDapp MVP on XDC Network. Including a stable token backed by XDC",
   "main": "index.js",
   "repository": "https://github.com/kachdekan/buidl-the-future.git",
   "author": "Kachi <kachdekan@gmail.com>",
@@ -23,9 +23,19 @@
     "hardhat:accounts": "yarn workspace @buidl-the-future/hardhat accounts",
     "hardhat:devchain": "yarn workspace @buidl-the-future/hardhat devchain",
     "hardhat:fork-mainnet": "yarn workspace @buidl-the-future/hardhat fork-mainnet",
+    "stability:test": "yarn workspace @buidl-the-future/stability test",
+    "stability:deploy": "yarn workspace @buidl-the-future/stability deploy",
+    "stability:watch": "yarn workspace @buidl-the-future/stability watch",
+    "stability:accounts": "yarn workspace @buidl-the-future/stability accounts",
+    "stability:devchain": "yarn workspace @buidl-the-future/stability devchain",
+    "stability:fork-mainnet": "yarn workspace @buidl-the-future/stability fork-mainnet",
     "hardhat:deploy-reset-watch": "yarn workspace @buidl-the-future/hardhat deploy-reset-watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare-hardhat": "cd packages/hardhat && yarn && npx hardhat typechain && yarn deploy",
+    "prepare-stability": "cd packages/stability && yarn && npx hardhat typechain && yarn deploy",
     "build-ui": "yarn prepare-hardhat && cd packages/xdapp && yarn && yarn build"
+  },
+  "devDependencies": {
+    "ganache": "^7.5.0"
   }
 }

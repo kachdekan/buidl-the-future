@@ -51,8 +51,7 @@ export default function HomeScreen({ navigation }) {
   const news = [
     {
       id: 'Ax675',
-      imgLink:
-        'https://images.unsplash.com/photo-1579621970795-87facc2f976d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+      imgLink: 'https://source.unsplash.com/ZVprbBmT8QA',
       title: "Bitcoin's rocky road to becoming a risk-off asset: Analysts investigate",
       time: '16:07',
       publisher: 'The Cointelegraph',
@@ -60,8 +59,7 @@ export default function HomeScreen({ navigation }) {
     },
     {
       id: 'Ax680',
-      imgLink:
-        'https://images.unsplash.com/photo-1579621970795-87facc2f976d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+      imgLink: 'https://source.unsplash.com/ZVprbBmT8QA',
       title: "Bitcoin's rocky road to becoming a risk-off asset: Analysts investigate",
       time: '16:07',
       publisher: 'The Cointelegraph',
@@ -69,8 +67,7 @@ export default function HomeScreen({ navigation }) {
     },
     {
       id: 'Ax685',
-      imgLink:
-        'https://images.unsplash.com/photo-1579621970795-87facc2f976d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+      imgLink: 'https://source.unsplash.com/ZVprbBmT8QA',
       title: "Bitcoin's rocky road to becoming a risk-off asset: Analysts investigate",
       time: '16:07',
       publisher: 'The Cointelegraph',
