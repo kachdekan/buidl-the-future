@@ -5,19 +5,23 @@ import { Feather, Ionicons } from '@expo/vector-icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { connectToProvider, isProviderSet } from 'xdapp/blockchain/provider.js'
 import { FeatureHomeCard, TransactionItem, NewsItem } from 'xdapp/components'
+import { useGetTokenTransfersQuery, useGetTxsByAddrQuery } from '../../app/services/blockscout'
 
 export default function HomeScreen({ navigation }) {
+  const address = useSelector((s) => s.wallet.walletInfo.address)
   const [refreshing, setRefreshing] = useState(false)
   const totalBalance = 0.0
-
+  const { data, error, isLoading } = useGetTokenTransfersQuery(
+    '0x8E912eE99bfaECAe8364Ba6604612FfDfE46afd2',
+  )
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout))
   }
 
   const onRefresh = useCallback(async () => {
-    connectToProvider()
     setRefreshing(true)
     wait(2000).then(async () => {
+      console.log(data)
       setRefreshing(false)
     })
   }, [])

@@ -63,7 +63,6 @@ const spacesSlice = createSlice({
       state.roscaDetails = payload
     },
   },
-  extraReducers: {},
 })
 
 export const {

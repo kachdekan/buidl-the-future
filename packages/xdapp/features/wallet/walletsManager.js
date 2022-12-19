@@ -4,7 +4,7 @@ import { getUserWallets } from 'xdapp/app/storage'
 export const walletsListCache = {}
 
 export async function hasWallets() {
-  const result = await getAccounts()
+  const result = await getWallets()
   return result.length !== 0
 }
 
