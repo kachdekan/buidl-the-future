@@ -1,13 +1,31 @@
-import { createWallet as createWalletAct, importWallet, updateWalletAddress } from './walletSlice'
-import { createWallet } from 'xdapp/blockchain/blockchainHelper'
+import {
+  createWallet as createWalletAct,
+  importWallet,
+  updateWalletAddress,
+  fetchBalances,
+  updateBalances,
+} from './walletSlice'
+import { createWallet, getBalances } from 'xdapp/blockchain/blockchainHelper'
 import { encryptData } from 'xdapp/utils/encryption'
 import { storeUserWallet } from 'xdapp/app/storage'
 import { WALLETS_STORE } from '../../consts'
 import { getDefaultNewWalletName, walletsListCache } from './walletsManager'
 import { getPendingWallet } from './pendingWallet'
 import { setLoggedIn } from '../essentials/essentialSlice'
+import { NativeTokensByAddress } from './tokens'
 
 export const walletListeners = (startListening) => {
+  startListening({
+    actionCreator: fetchBalances,
+    effect: async (action, listenerApi) => {
+      const isSignerSet = listenerApi.getState().essential.isSignerSet
+      const address = listenerApi.getState().wallet.walletInfo.address
+      if (isSignerSet && address) {
+        const tokenAddrToValue = await getBalances(address, NativeTokensByAddress)
+        listenerApi.dispatch(updateBalances({ tokenAddrToValue, lastUpdated: Date.now() }))
+      }
+    },
+  })
   startListening({
     actionCreator: createWalletAct,
     effect: async (action, listenerApi) => {

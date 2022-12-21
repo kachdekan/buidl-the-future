@@ -1,6 +1,6 @@
 import { config } from 'xdapp/blockchain/configs'
 
-const XDC = {
+export const XDC = {
   symbol: 'XDC',
   name: 'XDC Token',
   address: config.contractAddresses.XDCToken,
@@ -8,7 +8,7 @@ const XDC = {
   chainId: config.chainId,
   sortOrder: 10,
 }
-const USXD = {
+export const USXD = {
   symbol: 'USxD',
   name: 'USD Token',
   address: config.contractAddresses.StableToken,
@@ -18,18 +18,10 @@ const USXD = {
   sortOrder: 20,
 }
 
-const NativeTokens = [XDC, USXD]
-const StableTokens = [USXD]
+export const NativeTokens = [XDC, USXD]
+export const StableTokens = [USXD]
 
-const NativeTokensByAddress = {
+export const NativeTokensByAddress = {
   [XDC.address]: XDC,
   [USXD.address]: USXD,
-}
-
-module.exports = {
-  XDC,
-  USXD,
-  NativeTokens,
-  NativeTokensByAddress,
-  StableTokens,
 }

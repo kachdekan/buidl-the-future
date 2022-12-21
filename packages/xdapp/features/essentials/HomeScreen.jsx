@@ -1,89 +1,117 @@
 import { Box, Text, HStack, Icon, FlatList, Pressable } from 'native-base'
 import { RefreshControl } from 'react-native'
+import { utils } from 'ethers'
 import { useState, useEffect, useCallback } from 'react'
 import { Feather, Ionicons } from '@expo/vector-icons'
 import { useSelector, useDispatch } from 'react-redux'
-import { connectToProvider, isProviderSet } from 'xdapp/blockchain/provider.js'
+import { NativeTokensByAddress } from '../wallet/tokens'
+import { fetchBalances } from '../wallet/walletSlice'
 import { FeatureHomeCard, TransactionItem, NewsItem } from 'xdapp/components'
 import { useGetTokenTransfersQuery, useGetTxsByAddrQuery } from '../../app/services/blockscout'
+import { useGetLatestNewsQuery } from '../../app/services/newsdata'
+import { shortenAddress, areAddressesEqual } from 'xdapp/utils/addresses'
+import { getDaysBetween } from 'xdapp/utils/time'
 
 export default function HomeScreen({ navigation }) {
-  const address = useSelector((s) => s.wallet.walletInfo.address)
+  const dispatch = useDispatch()
+  const walletAddress = useSelector((s) => s.wallet.walletInfo.address)
+  const balances = useSelector((s) => s.wallet.walletBalances.tokenAddrToValue)
+  const tokenAddrs = Object.keys(NativeTokensByAddress)
+  const { isSignerSet } = useSelector((s) => s.essential)
   const [refreshing, setRefreshing] = useState(false)
-  const totalBalance = 0.0
-  const { data, error, isLoading } = useGetTokenTransfersQuery(
-    '0x8E912eE99bfaECAe8364Ba6604612FfDfE46afd2',
-  )
+  const [transactions, setTransactions] = useState([])
+  const [news, setNews] = useState([])
+  const {
+    data: txData,
+    error: txError,
+    isLoading: txIsLoading,
+  } = useGetTokenTransfersQuery(walletAddress.replace('0x', 'xdc'))
+  const { data: newsData, error: newsError } = useGetLatestNewsQuery('xdc')
+
+  let totalBalance = 0
+  const xdcInUsd = 0.028
+  if (balances) {
+    totalBalance = balances[tokenAddrs[1]] * 1 + balances[tokenAddrs[0]] * xdcInUsd
+  }
+
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout))
   }
 
+  useEffect(() => {
+    if (!balances) {
+      if (isSignerSet) {
+        //handleGetBalances()
+        dispatch(fetchBalances())
+      }
+    }
+  }, [isSignerSet])
+
+  useEffect(() => {
+    if (txData) handleGetTransactions()
+  }, [txData])
+
+  useEffect(() => {
+    if (newsData) handleGetNews()
+  }, [newsData])
+
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
     wait(2000).then(async () => {
-      console.log(data)
+      if (txData) handleGetTransactions()
       setRefreshing(false)
     })
   }, [])
 
-  const transactions = [
-    {
-      tx: '0x6725',
-      title: 'Added money',
-      date: '20 Jun, 11:56',
-      token: 'USxD',
-      amount: '10',
-      credited: true,
-    },
-    {
-      tx: '0x6730',
-      title: 'Withdrew money',
-      date: '20 Jun, 11:56',
-      token: 'USxD',
-      amount: '10',
-      credited: false,
-    },
-    {
-      tx: '0x6735',
-      title: 'Added money',
-      date: '20 Jun, 11:56',
-      token: 'USxD',
-      amount: '10',
-      credited: true,
-    },
-  ]
+  const handleGetTransactions = () => {
+    const thisTxs = []
+    const goodTxs = Array.prototype.filter.call(
+      txData.items,
+      (txs) => txs.value.toString() * 1 >= utils.parseUnits('0.0008', txs.decimals).toString() * 1,
+    )
+    goodTxs.forEach((tx) => {
+      const txDate = new Date(tx.timestamp)
+      const date = txDate.toDateString().split(' ')
+      const txItem = {
+        tx: tx._id,
+        credited: areAddressesEqual(tx.to.replace('xdc', '0x'), walletAddress) ? true : false,
+        title: areAddressesEqual(tx.to.replace('xdc', '0x'), walletAddress)
+          ? shortenAddress(tx.from.replace('xdc', '0x'), true)
+          : shortenAddress(tx.to.replace('xdc', '0x'), true),
+        date: date[0] + ', ' + date[2] + ' ' + date[1] + ', ' + txDate.toTimeString().slice(0, 5),
+        amount: utils.formatUnits(tx.value, tx.decimals),
+        token: tx.symbol,
+      }
+      thisTxs.push(txItem)
+    })
+    setTransactions(thisTxs)
+  }
 
-  const news = [
-    {
-      id: 'Ax675',
-      imgLink: 'https://source.unsplash.com/ZVprbBmT8QA',
-      title: "Bitcoin's rocky road to becoming a risk-off asset: Analysts investigate",
-      time: '16:07',
-      publisher: 'The Cointelegraph',
-      link: 'https://example.com',
-    },
-    {
-      id: 'Ax680',
-      imgLink: 'https://source.unsplash.com/ZVprbBmT8QA',
-      title: "Bitcoin's rocky road to becoming a risk-off asset: Analysts investigate",
-      time: '16:07',
-      publisher: 'The Cointelegraph',
-      link: 'https://example.com',
-    },
-    {
-      id: 'Ax685',
-      imgLink: 'https://source.unsplash.com/ZVprbBmT8QA',
-      title: "Bitcoin's rocky road to becoming a risk-off asset: Analysts investigate",
-      time: '16:07',
-      publisher: 'The Cointelegraph',
-      link: 'https://example.com',
-    },
-  ]
+  const handleGetNews = () => {
+    const thisNews = []
+    newsData.results.forEach((news, index) => {
+      const [dateValues, timeValues] = news.pubDate.split(' ')
+      const [year, month, day] = dateValues.split('-')
+      const [hours, minutes, seconds] = timeValues.split(':')
+      const date = new Date(+year, +month - 1, +day, +hours, +minutes, +seconds)
+      const diff = getDaysBetween(date.getTime(), Date.now())
+      const newsItem = {
+        id: index,
+        imgLink: news.image_url ? news.image_url : 'https://source.unsplash.com/WYd_PkCa1BY',
+        title: news.title,
+        time: diff < 1 ? news.pubDate.split(' ')[1].slice(0, 5) : `${diff}d ago`,
+        publisher: news.source_id.charAt(0).toUpperCase() + news.source_id.slice(1),
+        link: news.link,
+      }
+      thisNews.push(newsItem)
+    })
+    setNews(thisNews)
+  }
 
   return (
     <Box flex={1} bg="primary.50" alignItems="center">
       <FlatList
-        data={transactions}
+        data={transactions.slice(0, 3)}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
@@ -156,7 +184,7 @@ export default function HomeScreen({ navigation }) {
               </HStack>
             </Box>
             <FlatList
-              data={news}
+              data={news.slice(0, 6)}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
               mt={1}

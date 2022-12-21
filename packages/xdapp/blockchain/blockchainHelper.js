@@ -2,9 +2,18 @@ import { Wallet, utils } from 'ethers'
 import { getProvider } from './provider'
 import { DERIVATION_PATH } from '../consts'
 import { config } from './configs'
+import { setSigner } from './signer'
 import { getContractByAddress, getContract, getCustomContract } from './contracts'
 import { sendTransaction, getCurrentNonce } from './transaction'
 import axios from 'axios'
+
+export const setAppSigner = async (privateKey) => {
+  const provider = getProvider()
+  //const wallet = Wallet.fromMnemonic(mnemonic, CELO_DERIVATION_PATH)
+  const signer = new Wallet(privateKey, provider)
+  //const signer = wallet.connect(provider)
+  setSigner(signer)
+}
 
 export const createWallet = async (derivationPath) => {
   const path = derivationPath || DERIVATION_PATH
@@ -34,7 +43,7 @@ export const getBalances = async (address, tokenMap) => {
   const fetchPromises = []
   for (const tokenAddr of tokenAddrs) {
     // logger.debug(`Fetching ${t.id} balance`)
-    if (tokenAddr === config.contractAddresses.MaticToken) {
+    if (tokenAddr === config.contractAddresses.XDCToken) {
       fetchPromises.push(getMaticBalance(address))
     } else {
       fetchPromises.push(getTokenBalance(address, tokenAddr))
@@ -53,7 +62,7 @@ const getMaticBalance = async (address) => {
   const provider = getProvider()
   const balance = await provider.getBalance(address)
   return {
-    tokenAddress: config.contractAddresses.MaticToken,
+    tokenAddress: config.contractAddresses.XDCToken,
     value: utils.formatUnits(balance, 18),
   }
 }

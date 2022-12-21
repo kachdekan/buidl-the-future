@@ -10,7 +10,7 @@ export function isSignerSet() {
 
 export function getSigner() {
   if (!signer) {
-    console('Signer is not yet initialized')
+    console.log('Signer is not yet initialized')
     throw new Error('Attempting to use signer before initialized')
   }
   return signer
@@ -26,11 +26,11 @@ export function setSigner(_signer) {
   }
 
   if (signer) {
-    console('Signer is being overridden')
+    console.log('Signer is being overridden')
   }
 
   signer = _signer
-  console('Signer is set')
+  console.log('Signer is set')
 }
 
 export function clearSigner() {

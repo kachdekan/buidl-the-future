@@ -1,10 +1,10 @@
 import { Contract, utils } from 'ethers'
 import { Erc20Abi } from './Abis/erc20'
 import { Erc721Abi } from './Abis/erc721'
-import { MaticTokenAbi } from './Abis/maticToken'
+//import { XDCTokenAbi } from './Abis/xdcToken'
 import { StableTokenAbi } from './Abis/stableToken'
-import SpacesAbi from './Abis/Jsons/Spaces.json'
-import RoscaAbi from './Abis/Jsons/Rosca.json'
+//import SpacesAbi from './Abis/Jsons/Spaces.json'
+//import RoscaAbi from './Abis/Jsons/Rosca.json'
 import { getSigner } from './signer'
 import { config } from './configs'
 import { areAddressesEqual, normalizeAddress } from '../utils/addresses'
@@ -13,8 +13,8 @@ import { areAddressesEqual, normalizeAddress } from '../utils/addresses'
 let contractCache = {}
 let tokenContractCache = {} // token address to contract
 
-export const spacesIface = new utils.Interface(SpacesAbi)
-export const roscaIface = new utils.Interface(RoscaAbi)
+//export const spacesIface = new utils.Interface(SpacesAbi)
+//export const roscaIface = new utils.Interface(RoscaAbi)
 
 export function getContract(c) {
   const cachedContract = contractCache[c]
