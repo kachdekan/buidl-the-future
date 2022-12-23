@@ -13,7 +13,7 @@ export async function sendTransaction(tx, feeEstimate) {
 }
 
 export async function signTransaction(tx, feeEstimate) {
-  const signer = getSigner(menu.args.phoneNumber)
+  const signer = getSigner()
   if (!feeEstimate) {
     // For now, require fee to be pre-computed when using this utility
     // May revisit later
@@ -25,7 +25,7 @@ export async function signTransaction(tx, feeEstimate) {
     // TODO: set gatewayFeeRecipient
     //feeCurrency: feeToken,
     gasLimit: feeEstimate,
-    type: 2,
+    //type: 2,
   })
   return signedTx
 }

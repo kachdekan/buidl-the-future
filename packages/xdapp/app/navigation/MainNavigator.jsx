@@ -4,8 +4,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import BottomTabNavigator from './BottomTabNavigator'
 
 //Screens
-
-import { DummyScreen } from 'xdapp/features/essentials'
+import {
+  DummyScreen,
+  SendFundsScreen,
+  ReviewTxScreen,
+  DepositScreen,
+} from 'xdapp/features/essentials'
 import { AccountScreen } from 'xdapp/features/account'
 import {
   SpacesTabsNavigator,
@@ -31,6 +35,9 @@ export default function MainNavigator() {
         screenOptions={{ presentation: 'modal', headerStyle: { backgroundColor: '#FFFAF5' } }}
       >
         <MainStack.Screen name="Account" component={AccountScreen} />
+        <MainStack.Screen name="sendFunds" component={SendFundsScreen} />
+        <MainStack.Screen name="depositFunds" component={DepositScreen} />
+        <MainStack.Screen name="reviewTx" component={ReviewTxScreen} />
         <MainStack.Screen name="MySpaces" component={SpacesTabsNavigator} />
         <MainStack.Screen name="createSpace" component={CreateSpaceScreen} />
         <MainStack.Screen name="selectContacts" component={SelectContactsScreen} />

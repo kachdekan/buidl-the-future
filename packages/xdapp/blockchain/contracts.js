@@ -59,7 +59,7 @@ export function getTokenContract(tokenAddress, abi) {
 
 export function getContractAbi(c) {
   switch (c) {
-    case 'MaticToken':
+    case 'XDCToken':
       return MaticTokenAbi
     case 'StableToken':
       return StableTokenAbi

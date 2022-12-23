@@ -2,7 +2,7 @@ import { Wallet, utils } from 'ethers'
 import { getProvider } from './provider'
 import { DERIVATION_PATH } from '../consts'
 import { config } from './configs'
-import { setSigner } from './signer'
+import { setSigner, getSigner } from './signer'
 import { getContractByAddress, getContract, getCustomContract } from './contracts'
 import { sendTransaction, getCurrentNonce } from './transaction'
 import axios from 'axios'
@@ -76,10 +76,50 @@ export const getTokenBalance = async (address, tokenAddress) => {
   return { tokenAddress, value: utils.formatUnits(balance, decimals) }
 }
 
-export const smartContractCall = async (contractName, args) => {
-  const gasstation = await axios.get('https://gasstation-mumbai.matic.today/v2')
-  const provider = getProvider()
+export const transfer = async (contractName, args) => {
+  const contract = getContract(contractName)
+  const currentNonce = await getCurrentNonce()
+  const gasPrice = utils.parseUnits('0.25', 'gwei').toString()
+  const wallet = getSigner()
+  if (!contract) throw new Error(`No contract found for name: ${contractName}`)
+  try {
+    let txReceipt
 
+    if (contract) {
+      const decimals = await contract.decimals()
+      const estimatedGas = await contract.estimateGas.transfer(
+        args.recipientAddress,
+        utils.parseUnits(args.amount.toString(), decimals),
+      )
+
+      const txResponse = await contract.transfer(
+        args.recipientAddress,
+        utils.parseUnits(args.amount.toString(), decimals),
+        {
+          gasPrice: args.gasPrice ? utils.parseUnits(args.gasPrice.toString(), 'gwei') : gasPrice,
+          nonce: args.nonce || currentNonce,
+          gasLimit: args.gasLimit || estimatedGas,
+        },
+      )
+      txReceipt = await txResponse.wait()
+    } else {
+      const txResponse = await wallet.sendTransaction({
+        to: args.recipientAddress,
+        value: utils.parseEther(args.amount.toString()),
+        gasPrice: args.gasPrice ? utils.parseUnits(args.gasPrice.toString(), 'gwei') : gasPrice,
+        nonce: args.nonce || currentNonce,
+        data: args.data ? utils.hexlify(utils.toUtf8Bytes(args.data)) : '0x',
+      })
+      txReceipt = await txResponse.wait()
+    }
+
+    return txReceipt
+  } catch (error) {
+    throw error
+  }
+}
+
+export const smartContractCall = async (contractName, args) => {
   let contract = null
   if (args.contractAddress) {
     contract = getCustomContract(contractName, args.contractAddress)
@@ -90,33 +130,25 @@ export const smartContractCall = async (contractName, args) => {
   //const nonce = await signer.getTransactionCount('pending')
   if (!contract) throw new Error(`No contract found for name: ${contractName}`)
   try {
-    let txReceipt = null
-    let unsignedTx = null
+    let txReceipt
+    let unsignedTx
     let overrides = {}
 
     const feeEstimate = {
-      maxPriorityFeePerGas: utils
-        .parseUnits(gasstation.data.fast['maxPriorityFee'].toFixed(9).toString(), 'gwei')
-        .toString(), // Recommended maxPriorityFeePerGas
-      maxFeePerGas: utils
-        .parseUnits(gasstation.data.fast['maxFee'].toFixed(9).toString(), 'gwei')
-        .toString(),
-      gasPrice: utils.parseUnits('1.55', 'gwei').toString(),
-      gasLimit: utils.parseUnits('0.00030', 'gwei').toString(),
-      //feeToken: config.contractAddresses.StableToken,
+      gasPrice: utils.parseUnits('0.1', 'gwei').toString(),
+      gasLimit: utils.parseUnits('0.025', 'gwei').toString(),
+      fee: '0.0',
+      feeToken: config.contractAddresses.StableToken,
     }
-    const currentNonce = await getCurrentNonce()
 
     if (args.methodType === 'read') {
       overrides = {}
     } else if (args.methodType === 'write') {
-      const { maxPriorityFeePerGas, maxFeePerGas, gasLimit } = feeEstimate
-
+      const { gasPrice, gasLimit } = feeEstimate
       overrides = {
-        maxPriorityFeePerGas,
-        maxFeePerGas,
+        gasPrice,
         gasLimit,
-        nonce: currentNonce,
+        //nonce: args.nonce ? args.nonce : 1,
         value: args.value ? utils.parseEther(args.value.toString()) : 0,
       }
     }
@@ -126,14 +158,8 @@ export const smartContractCall = async (contractName, args) => {
         const approvalContract = getContract(args.approvalContract)
         await approvalContract.approve(args.contractAddress, args.params[0])
       }
-      unsignedTx = await contract.populateTransaction[args.method](
-        ...args.params,
-        args.approvalContract ? { ...overrides, nonce: currentNonce + 1 } : overrides,
-      )
-      const limit = args.approvalContract
-        ? feeEstimate.gasLimit
-        : utils.parseUnits('0.0035', 'gwei').toString() //await provider.estimateGas({ ...unsignedTx, chainId: config.chainId, type: 2 })
-      txReceipt = await sendTransaction({ ...unsignedTx, chainId: config.chainId }, limit)
+      unsignedTx = await contract.populateTransaction[args.method](...args.params, overrides)
+      txReceipt = await sendTransaction(unsignedTx, feeEstimate)
     } else {
       txReceipt = await contract?.[args.method](overrides)
     }

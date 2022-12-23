@@ -57,6 +57,7 @@ export default function HomeScreen({ navigation }) {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
+    dispatch(fetchBalances())
     wait(2000).then(async () => {
       if (txData) handleGetTransactions()
       setRefreshing(false)
@@ -73,7 +74,7 @@ export default function HomeScreen({ navigation }) {
       const txDate = new Date(tx.timestamp)
       const date = txDate.toDateString().split(' ')
       const txItem = {
-        tx: tx._id,
+        id: tx._id,
         credited: areAddressesEqual(tx.to.replace('xdc', '0x'), walletAddress) ? true : false,
         title: areAddressesEqual(tx.to.replace('xdc', '0x'), walletAddress)
           ? shortenAddress(tx.from.replace('xdc', '0x'), true)
@@ -123,12 +124,12 @@ export default function HomeScreen({ navigation }) {
               btn1={{
                 icon: <Icon as={Feather} name="plus" size="md" color="text.50" mr="1" />,
                 name: 'Deposit',
-                screen: 'DummyModal',
+                screen: 'depositFunds',
               }}
               btn2={{
                 icon: <Icon as={Feather} name="arrow-right" size="md" color="text.50" mr="1" />,
                 name: 'Transfer',
-                screen: 'DummyModal',
+                screen: 'sendFunds',
               }}
               itemBottom={false}
             />
@@ -146,6 +147,7 @@ export default function HomeScreen({ navigation }) {
             ) : null}
           </Box>
         }
+        keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => (
           <Box
             width="95%"
@@ -155,6 +157,7 @@ export default function HomeScreen({ navigation }) {
             roundedTop={index == 0 ? '2xl' : 'md'}
             roundedBottom={index == transactions.length - 1 ? '2xl' : 'md'}
             mt={1}
+            //key={index.toString()}
           >
             <TransactionItem
               credited={item.credited}
@@ -168,29 +171,36 @@ export default function HomeScreen({ navigation }) {
             />
           </Box>
         )}
-        keyExtractor={(item) => item.tx}
         ListFooterComponent={
           <>
-            <Box width="95%" mx="2.5%">
-              <HStack justifyContent="space-between" mx={4} mt={4} mb={2}>
-                <Text fontWeight="medium" color="warmGray.800">
-                  Some news for you
-                </Text>
-                <Pressable onPress={() => navigation.navigate('DummyModal')}>
-                  <Text fontWeight="medium" color="primary.400">
-                    Read all
+            {news.length > 0 ? (
+              <Box width="95%" mx="2.5%">
+                <HStack justifyContent="space-between" mx={4} mt={4} mb={2}>
+                  <Text fontWeight="medium" color="warmGray.800">
+                    Some news for you
                   </Text>
-                </Pressable>
-              </HStack>
-            </Box>
+                  <Pressable onPress={() => navigation.navigate('DummyModal')}>
+                    <Text fontWeight="medium" color="primary.400">
+                      Read all
+                    </Text>
+                  </Pressable>
+                </HStack>
+              </Box>
+            ) : null}
             <FlatList
               data={news.slice(0, 6)}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
               mt={1}
               mb={4}
+              //keyExtractor={(item) => item.id}
               renderItem={({ item, index }) => (
-                <Box maxH="50%" ml={index == 0 ? 2 : 1} mr={index == 2 ? 2 : 1}>
+                <Box
+                  //key={index.toString()}
+                  maxH="50%"
+                  ml={index == 0 ? 2 : 1}
+                  mr={index == news.slice(0, 6).length - 1 ? 2 : 1}
+                >
                   <NewsItem
                     imgLink={item.imgLink}
                     title={item.title}
@@ -200,7 +210,6 @@ export default function HomeScreen({ navigation }) {
                   />
                 </Box>
               )}
-              keyExtractor={(item) => item.id}
             />
           </>
         }

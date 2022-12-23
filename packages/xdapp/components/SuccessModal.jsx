@@ -1,21 +1,24 @@
 import { Modal, Icon, Text, Button } from 'native-base'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 
 const SuccessModal = ({ isOpen, onClose, message, screen, scrnOptions }) => {
+  const navigation = useNavigation()
   return (
-    <Modal isOpen={isOpen} onClose={onClose} animationPreset="slide">
-      <Modal.Content width="65%" maxWidth="400px">
+    <Modal isOpen={isOpen} onClose={onClose} animationPreset="slide" mt="60%" mb="10">
+      <Modal.Content width="80%" maxWidth="400px">
         <Modal.Body alignItems="center">
-          <Icon as={Ionicons} name="md-checkmark-circle" size="6xl" color="success.600" />
+          <Icon as={Ionicons} name="md-checkmark-circle-outline" size="6xl" color="success.500" />
           <Text textAlign="center" mt={3}>
             {message}
           </Text>
           <Button
             variant="subtle"
             rounded="3xl"
-            w="60%"
+            bg="primary.100"
+            w="75%"
             mt={3}
-            _text={{ color: 'primary.600', fontWeight: 'semibold' }}
+            _text={{ color: 'text.900', fontWeight: 'semibold', mb: '0.5' }}
             onPress={() => {
               onClose(), navigation.navigate(screen, scrnOptions)
             }}
