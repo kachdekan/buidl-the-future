@@ -7,7 +7,8 @@ const spacesInitialState = {
     // for space creation
     name: null,
     type: null, //personal, rosca, regular, mchango
-    authCode: '369bC1',
+    authCode: '112233AABB',
+    imgLink: null,
     members: [], //!TODO always include creator.
     goalAmount: null,
     ctbAmount: null,
@@ -20,7 +21,7 @@ const spacesInitialState = {
   roscaDetails: {},
   userSpaces: {
     // just add contract addresses
-    roscas: ['0x3C842105ea78699B90517Ffc2746019f1149FC28'],
+    roscas: [],
     personal: [],
     regular: [],
     mchango: [],
@@ -36,10 +37,13 @@ const spacesSlice = createSlice({
       state.spaceInfo.members = action.payload
     },
     setSpaceInfo: (state, { payload }) => {
-      const { spaceName, spaceType } = payload
+      const { spaceName, spaceType, walletAddress, defaultImg } = payload
+
       state.spaceInfo.members = state.selectedMembers
       state.spaceInfo.name = spaceName
       state.spaceInfo.type = spaceType
+      state.spaceInfo.creator = walletAddress
+      state.spaceInfo.imgLink = defaultImg
     },
     setCtbSchedule: (state, { payload }) => {
       ;(state.spaceInfo.ctbDay = payload.day), (state.spaceInfo.ctbOccurence = payload.occurrence)
@@ -50,7 +54,7 @@ const spacesSlice = createSlice({
     setGoalAmount: (state, { payload }) => {
       const size = state.spaceInfo.members.length
       state.spaceInfo.goalAmount = payload
-      state.spaceInfo.ctbAmount = size ? payload / state.spaceInfo.members.length : payload
+      state.spaceInfo.ctbAmount = size ? payload / (state.spaceInfo.members.length + 1) : payload
     },
     setUserSpaces: (state, { payload }) => {
       if (state.spaceInfo.type === 'rosca') {

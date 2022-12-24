@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { setSpaceInfo } from './spacesSlice'
 
 export default function CreateSpaceScreen({ navigation }) {
+  const walletAddress = useSelector((s) => s.wallet.walletInfo.address)
   const suggestions = ['Savings', 'Vacation', 'Chama', 'Gift', 'Sherehe', 'Emergency', 'Masomo']
   const dispatch = useDispatch()
   const [spaceName, setSpaceName] = useState('')
@@ -87,7 +88,7 @@ export default function CreateSpaceScreen({ navigation }) {
             minW="75%"
             _text={{ color: 'text.50', fontWeight: 'semibold', mb: '0.5' }}
             onPress={() => {
-              dispatch(setSpaceInfo({ spaceName, spaceType }))
+              dispatch(setSpaceInfo({ spaceName, spaceType, walletAddress, defaultImg }))
               navigation.navigate(nextScreen)
             }}
           >

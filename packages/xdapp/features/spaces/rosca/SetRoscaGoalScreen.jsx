@@ -15,23 +15,20 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 import { useState } from 'react'
 
-import {
-  getRoscaData,
-  setCtbSchedule,
-  setDisbSchedule,
-  setGoalAmount,
-  setUserSpaces,
-} from '../spacesSlice'
-//import celoHelper from '../../blockchain/helpers/celoHelper'
-//import { config } from '../../blockchain/configs/celo.config'
-//import { spacesIface } from '../../blockchain/contracts'
+import { setCtbSchedule, setDisbSchedule, setGoalAmount, setUserSpaces } from '../spacesSlice'
+import { smartContractCall } from 'xdapp/blockchain/blockchainHelper'
+import { config } from 'xdapp/blockchain/configs'
+import { NativeTokens } from 'xdapp/features/wallet/tokens'
+import { spacesIface } from 'xdapp/blockchain/contracts'
 import { utils } from 'ethers'
+import { customAlphabet } from 'nanoid'
 import { ScheduleActSheet, SuccessModal } from 'xdapp/components'
 
 export default function SetRoscaGoalScreen({ navigation, route }) {
   const dispatch = useDispatch()
   const spaceInfo = useSelector((state) => state.spaces.spaceInfo)
-  const [newRosca, setNewRosca] = useState({ address: '' })
+  const [newRosca, setNewRosca] = useState({ address: '', authCode: '' })
+  const [token, setToken] = useState('USxD')
   const [amount, setAmount] = useState('')
   const { isOpen, onOpen, onClose } = useDisclose()
   const { isOpen: isOpen1, onOpen: onOpen1, onClose: onClose1 } = useDisclose()
@@ -43,6 +40,63 @@ export default function SetRoscaGoalScreen({ navigation, route }) {
   const [isLoading, setIsLoading] = useState(false)
   //const userAddress = useSelector((s) => s.wallet.walletInfo.address)
   const members = useSelector((state) => state.spaces.selectedMembers)
+  const thisToken = NativeTokens.find((Token) => Token.symbol === token)
+  const nanoid = customAlphabet('1234567890ABCDEF', 10)
+
+  const createRosca = async () => {
+    setIsLoading(true)
+    const authCode = nanoid()
+    const ctbAmount = utils
+      .parseUnits(spaceInfo.ctbAmount.toString(), thisToken.decimals)
+      .toString()
+    const goalAmount = utils
+      .parseUnits(spaceInfo.goalAmount.toString(), thisToken.decimals)
+      .toString()
+    try {
+      let txData = {
+        token: config.contractAddresses['StableToken'],
+        roscaName: spaceInfo.name,
+        imageLink: spaceInfo.imgLink,
+        authCode,
+        goalAmount,
+        ctbAmount,
+        ctbDay: spaceInfo.ctbDay,
+        ctbOccur: spaceInfo.ctbOccurence,
+        disbDay: spaceInfo.disbDay,
+        disbOccur: spaceInfo.disbOccurence,
+      }
+      const txReceipt = await smartContractCall('Spaces', {
+        method: 'createRosca',
+        methodType: 'write',
+        params: [Object.values(txData)],
+      })
+      handleTxResponce(txReceipt)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const handleTxResponce = (txReceipt) => {
+    setIsLoading(false)
+    const { data, topics } = txReceipt.logs.find(
+      (el) => el.address === config.contractAddresses['Spaces'],
+    )
+    const results = spacesIface.parseLog({ data, topics })
+    if (results) {
+      const roscaDetails = {
+        address: results.args.roscaAddress,
+        roscaName: results.args[2][1],
+        goalAmount: utils.formatUnits(results.args[2][4], thisToken.decimals),
+        goalAmountPaid: 0,
+        ctbDay: results.args[2][6],
+        ctbOccur: results.args[2][7],
+        authCode: results.args[2][3],
+      }
+      setNewRosca(roscaDetails)
+      dispatch(setUserSpaces(results.args.roscaAddress))
+      onOpen1()
+    }
+  }
 
   return (
     <Box flex={1} bg="primary.50" alignItems="center">
@@ -76,7 +130,8 @@ export default function SetRoscaGoalScreen({ navigation, route }) {
             </HStack>
             <Text px={5} mb={3}>
               Each member contributes:{' '}
-              {members.length > 0 ? (amount / members.length).toFixed(2).toString() : 'some'} USxD
+              {members.length > 0 ? (amount / (members.length + 1)).toFixed(2).toString() : 'some'}{' '}
+              USxD
             </Text>
           </Box>
           <HStack
@@ -125,7 +180,7 @@ export default function SetRoscaGoalScreen({ navigation, route }) {
             </Pressable>
           </HStack>
           <Stack py={3} px={4}>
-            <Text>Members: {members.length}</Text>
+            <Text>Members: You + {members.length}</Text>
             <HStack py={2} space={3}>
               {members.map((member) => {
                 return (
@@ -151,18 +206,19 @@ export default function SetRoscaGoalScreen({ navigation, route }) {
         <SuccessModal
           isOpen={isOpen1}
           onClose={onClose1}
-          message="Rosca created successfully!"
+          message={`Rosca created successfully! \nInvite Code: ${newRosca.authCode}`}
           screen="RoscaHome"
           scrnOptions={{ roscaAddress: newRosca.address }}
         />
         <Spacer />
-        <Stack alignItems="center" space={3} mb={8}>
+        <Stack alignItems="center" space={3} mb={16}>
           <Button
             variant="subtle"
             rounded="3xl"
             bg="primary.100"
             w="60%"
             _text={{ color: 'text.900', fontWeight: 'semibold', mb: '0.5' }}
+            onPress={() => {}}
           >
             Skip
           </Button>
@@ -171,14 +227,10 @@ export default function SetRoscaGoalScreen({ navigation, route }) {
             isLoadingText="Submitting"
             rounded="3xl"
             w="60%"
-            _text={{ color: 'primary.100', fontWeight: 'semibold', mb: '0.5' }}
+            _text={{ color: 'text.50', fontWeight: 'semibold', mb: '0.5' }}
             onPress={() => {
-              //createRosca()
-              //dispatch(setUserSpaces(userAddress))
-              navigation.navigate('RoscaHome', {
-                roscaAddress: '0x0000000000',
-              })
-              console.log(spaceInfo)
+              createRosca()
+              /*dispatch(setUserSpaces(userAddress)*/
             }}
           >
             Continue
@@ -192,58 +244,10 @@ export default function SetRoscaGoalScreen({ navigation, route }) {
 function SelectedMembers(props) {
   return (
     <VStack alignItems="center">
-      <Avatar>{props.nameInitials}</Avatar>
+      <Avatar bg="primary.200" _text={{ color: 'text.800' }}>
+        {props.nameInitials}
+      </Avatar>
       <Text fontSize="xs">{props.name}</Text>
     </VStack>
   )
 }
-
-/*const createRosca = async () => {
-    setIsLoading(true)
-    const ctbAmount = utils.parseEther(spaceInfo.ctbAmount.toString()).toString()
-    const goalAmount = utils.parseEther(spaceInfo.goalAmount.toString()).toString()
-    let results
-    const imageLink = 'https://source.unsplash.com/ybPJ47PMT_M'
-    try {
-      let txData = {
-        token: config.contractAddresses['StableToken'],
-        roscaName: spaceInfo.name,
-        imageLink,
-        authCode: spaceInfo.authCode,
-        goalAmount,
-        ctbAmount,
-        ctbDay: spaceInfo.ctbDay,
-        ctbOccur: spaceInfo.ctbOccurence,
-        disbDay: spaceInfo.disbDay,
-        disbOccur: spaceInfo.disbOccurence,
-      }
-      const txReceipt = await celoHelper.smartContractCall('Spaces', {
-        method: 'createRosca',
-        methodType: 'write',
-        params: [Object.values(txData)],
-      })
-      handleTxResponce(txReceipt)
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-  const handleTxResponce = (txReceipt) => {
-    setIsLoading(false)
-    const { data, topics } = txReceipt.logs.find(
-      (el) => el.address === config.contractAddresses['Spaces'],
-    )
-    const results = spacesIface.parseLog({ data, topics })
-    if (results) {
-      const roscaDetails = {
-        address: results.args.roscaAddress,
-        roscaName: results.args[2][1],
-        goalAmount: utils.formatUnits(results.args[2][4], 'ether'),
-        goalAmountPaid: 0,
-        ctbDay: results.args[2][6],
-        ctbOccur: results.args[2][7],
-      }
-      setNewRosca(roscaDetails)
-      dispatch(setUserSpaces(results.args.roscaAddress))
-      onOpen1()
-    } */

@@ -121,6 +121,7 @@ export const transfer = async (contractName, args) => {
 
 export const smartContractCall = async (contractName, args) => {
   let contract = null
+  const currentNonce = await getCurrentNonce()
   if (args.contractAddress) {
     contract = getCustomContract(contractName, args.contractAddress)
   } else {
@@ -135,10 +136,10 @@ export const smartContractCall = async (contractName, args) => {
     let overrides = {}
 
     const feeEstimate = {
-      gasPrice: utils.parseUnits('0.1', 'gwei').toString(),
+      gasPrice: utils.parseUnits('0.25', 'gwei').toString(),
       gasLimit: utils.parseUnits('0.025', 'gwei').toString(),
-      fee: '0.0',
-      feeToken: config.contractAddresses.StableToken,
+      //fee: '0.0',
+      //feeToken: config.contractAddresses.StableToken,
     }
 
     if (args.methodType === 'read') {
@@ -148,7 +149,7 @@ export const smartContractCall = async (contractName, args) => {
       overrides = {
         gasPrice,
         gasLimit,
-        //nonce: args.nonce ? args.nonce : 1,
+        nonce: args.nonce ? args.nonce : currentNonce,
         value: args.value ? utils.parseEther(args.value.toString()) : 0,
       }
     }

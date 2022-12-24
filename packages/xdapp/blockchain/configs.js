@@ -1,4 +1,4 @@
-//import deployed from './Abis/Jsons/deployed.json'
+import deployed from './Abis/Jsons/deployed.json'
 
 const configPolygonMumbai = {
   jsonRpcUrlPrimary: 'https://erpc.apothem.network',
@@ -9,7 +9,7 @@ const configPolygonMumbai = {
   contractAddresses: {
     StableToken: '0x1e2913E1aC339a4996353f8F58BE0de3D109b5A5', //USxD
     XDCToken: '0x03c0d9bc556BE68870B96976e81D32ebb49d335D', //Not the actual address
-    Spaces: '0x0000000000000000000000000000000000000000', //deployed[chainId][0].contracts.Spaces.address,
+    Spaces: deployed[51][0].contracts.Spaces.address, //deployed[chainId][0].contracts.Spaces.address,
     RoscaSpace: '0x0000000000000000000000000000000000000000',
     PersonalSpace: '0x0000000000000000000000000000000000000000',
     GroupSpace: '0x0000000000000000000000000000000000000000',

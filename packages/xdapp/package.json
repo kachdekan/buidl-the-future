@@ -44,8 +44,7 @@
     "react-native-svg": "12.3.0",
     "react-native-tab-view": "^3.3.0",
     "react-native-web": "0.17.7",
-    "react-redux": "^8.0.5",
-    "remove": "^0.1.5"
+    "react-redux": "^8.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
