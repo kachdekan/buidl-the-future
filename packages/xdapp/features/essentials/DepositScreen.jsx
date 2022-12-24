@@ -54,7 +54,7 @@ export default function DepositScreen() {
           pr="4"
           minW="40%"
           _text={{ color: 'text.900', fontWeight: 'semibold', mb: '0.5' }}
-          onPress={console.log('Share image')}
+          onPress={() => console.log('Share image')}
         >
           Save Image
         </Button>
@@ -64,7 +64,7 @@ export default function DepositScreen() {
           pr="4"
           minW="40%"
           _text={{ color: 'text.50', fontWeight: 'semibold', mb: '0.5' }}
-          onPress={console.log('Share Address')}
+          onPress={() => console.log('Share Address')}
         >
           Share Address
         </Button>
