@@ -159,7 +159,10 @@ export const smartContractCall = async (contractName, args) => {
         const approvalContract = getContract(args.approvalContract)
         await approvalContract.approve(args.contractAddress, args.params[0])
       }
-      unsignedTx = await contract.populateTransaction[args.method](...args.params, overrides)
+      unsignedTx = await contract.populateTransaction[args.method](
+        ...args.params,
+        args.approvalContract ? { ...overrides, nonce: currentNonce + 1 } : overrides,
+      )
       txReceipt = await sendTransaction(unsignedTx, feeEstimate)
     } else {
       txReceipt = await contract?.[args.method](overrides)

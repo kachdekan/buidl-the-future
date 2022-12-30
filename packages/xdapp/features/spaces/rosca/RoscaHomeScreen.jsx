@@ -10,23 +10,37 @@ import {
   Avatar,
   Spinner,
   Icon,
+  FlatList,
 } from 'native-base'
 import { Feather } from '@expo/vector-icons'
 import { HeaderBackButton } from '@react-navigation/elements'
 import { useLayoutEffect, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { getRoscaData } from '../spacesSlice'
+import { TransactionItem } from 'xdapp/components'
+import { useGetTokenTransfersQuery, useGetTxsByAddrQuery } from '../../../app/services/blockscout'
+import { utils } from 'ethers'
+import { areAddressesEqual, shortenAddress } from 'xdapp/utils/addresses'
 
 export default function RoscaHomeScreen({ navigation, route }) {
   const roscaAddress = route.params.roscaAddress
-  console.log(roscaAddress)
+  //console.log(roscaAddress)
   const dispatch = useDispatch()
   const { roscaDetails } = useSelector((state) => state.spaces)
+  const {
+    data: txData,
+    error: txError,
+    isLoading: txIsLoading,
+  } = useGetTokenTransfersQuery(roscaAddress.replace('0x', 'xdc'))
+  const [transactions, setTransactions] = useState([])
   const [isFetching, setIsFetching] = useState(false)
 
   useEffect(() => {
     dispatch(getRoscaData(roscaAddress))
   }, [])
+  useEffect(() => {
+    if (txData) handleGetTransactions()
+  }, [txData])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -44,6 +58,32 @@ export default function RoscaHomeScreen({ navigation, route }) {
   }, [navigation])
 
   const prog = (roscaDetails.roscaBal / roscaDetails.goalAmount) * 100
+  const dueAmount = (roscaDetails.goalAmount * 1) / (roscaDetails.activeMembers * 1)
+
+  const handleGetTransactions = () => {
+    const thisTxs = []
+    const goodTxs = Array.prototype.filter.call(
+      txData.items,
+      (txs) => txs.value.toString() * 1 >= utils.parseUnits('0.0008', txs.decimals).toString() * 1,
+    )
+    goodTxs.forEach((tx) => {
+      const txDate = new Date(tx.timestamp)
+      const date = txDate.toDateString().split(' ')
+      const txItem = {
+        id: tx._id,
+        credited: areAddressesEqual(tx.to.replace('xdc', '0x'), roscaAddress) ? true : false,
+        title: areAddressesEqual(tx.to.replace('xdc', '0x'), roscaAddress)
+          ? shortenAddress(tx.from.replace('xdc', '0x'), true)
+          : shortenAddress(tx.to.replace('xdc', '0x'), true),
+        date: date[0] + ', ' + date[2] + ' ' + date[1] + ', ' + txDate.toTimeString().slice(0, 5),
+        amount: utils.formatUnits(tx.value, tx.decimals),
+        token: tx.symbol,
+      }
+      thisTxs.push(txItem)
+    })
+    setTransactions(thisTxs)
+  }
+
   if (!roscaDetails) {
     return <Spinner size="lg" />
   }
@@ -78,7 +118,7 @@ export default function RoscaHomeScreen({ navigation, route }) {
             pr="4"
             size="sm"
             _text={{ color: 'text.50', fontWeight: 'semibold', mb: '0.5' }}
-            onPress={() => navigation.navigate('fundSpace')}
+            onPress={() => navigation.navigate('fundRound', { roscaAddress, dueAmount })}
           >
             Fund
           </Button>
@@ -158,50 +198,37 @@ export default function RoscaHomeScreen({ navigation, route }) {
             See all
           </Text>
         </HStack>
-        <VStack w="95%" space={0.5}>
-          <Box bg="white" roundedTop="xl" roundedBottom="md">
-            <HStack m={2}>
-              <Avatar>AK</Avatar>
-              <VStack minW="78%" ml={3}>
-                <HStack>
-                  <Text fontWeight="medium" color="blueGray.600">
-                    Akimbo funded Round 2
-                  </Text>
-                  <Spacer />
-                  <Text color="primary.600" fontWeight="medium">
-                    + 600
-                  </Text>
-                </HStack>
-                <HStack>
-                  <Text color="blueGray.600">Mon, 26 Jul, 10:30</Text>
-                  <Spacer />
-                  <Text color="muted.500">870/1667.78</Text>
-                </HStack>
-              </VStack>
-            </HStack>
-          </Box>
-          <Box bg="white" roundedTop="md" roundedBottom="xl">
-            <HStack m={2}>
-              <Avatar>BK</Avatar>
-              <VStack minW="78%" ml={3}>
-                <HStack>
-                  <Text fontWeight="medium" color="blueGray.600">
-                    Bishi funded Round 2
-                  </Text>
-                  <Spacer />
-                  <Text color="primary.600" fontWeight="medium">
-                    + 500
-                  </Text>
-                </HStack>
-                <HStack>
-                  <Text color="blueGray.600">Mon, 26 Jul, 10:30</Text>
-                  <Spacer />
-                  <Text color="muted.500">500/1667.78</Text>
-                </HStack>
-              </VStack>
-            </HStack>
-          </Box>
-        </VStack>
+        <FlatList
+          //width="95%"
+          data={transactions.slice(0, 6)}
+          showsHorizontalScrollIndicator={false}
+          mt={1}
+          mb={4}
+          //keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => (
+            <Box
+              width="95%"
+              mx="2.5%"
+              bg="white"
+              opacity={85}
+              roundedTop={index == 0 ? '2xl' : 'md'}
+              roundedBottom={index == transactions.length - 1 ? '2xl' : 'md'}
+              mt={1}
+              //key={index.toString()}
+            >
+              <TransactionItem
+                credited={item.credited}
+                trTitle={item.title}
+                trDate={item.date}
+                spAmount={
+                  (item.credited ? '+' : '-') + (item.amount * 1).toFixed(2) + ' ' + item.token
+                }
+                eqAmount={(item.amount * 120.75).toFixed(2) + ' KES'}
+                screen="DummyModal"
+              />
+            </Box>
+          )}
+        />
       </Box>
     </Box>
   )
