@@ -2,9 +2,11 @@ import { Box, FlatList, Text } from 'native-base'
 import { RefreshControl } from 'react-native'
 import { useState, useEffect, useCallback } from 'react'
 import { SectionHeader, PopularItem, FeatureItem } from 'xdapp/components'
+import { useSelector } from 'react-redux'
 
 export default function GroupsSpacesScreen() {
   const [refreshing, setRefreshing] = useState(false)
+  const myGroupsSpaces = useSelector((s) => s.spaces.userSpaces.roscas)
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout))
   }
@@ -16,26 +18,6 @@ export default function GroupsSpacesScreen() {
     })
   }, [])
 
-  const myspaces = [
-    {
-      id: 'Ax675',
-      initiated: true,
-      title: 'Wrong Rende',
-      screen: 'DummyModal',
-      amount: '500',
-      dueDate: '22nd Dec 2022',
-      paid: '300',
-    },
-    {
-      id: 'Ax676',
-      initiated: true,
-      title: 'Wazito Mtaani',
-      screen: 'DummyModal',
-      amount: '2500',
-      dueDate: '2nd Jan 2023',
-      paid: '2000',
-    },
-  ]
   const popularItems = [
     {
       id: 'Ax675',
@@ -78,7 +60,7 @@ export default function GroupsSpacesScreen() {
   return (
     <Box flex={1} bg="primary.50">
       <FlatList
-        data={myspaces}
+        data={myGroupsSpaces}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
@@ -114,22 +96,23 @@ export default function GroupsSpacesScreen() {
             bg="white"
             opacity={85}
             roundedTop={index == 0 ? '2xl' : 'md'}
-            roundedBottom={index == myspaces.length - 1 ? '2xl' : 'md'}
+            roundedBottom={index == myGroupsSpaces.length - 1 ? '2xl' : 'md'}
             mt={1}
             borderWidth={1}
             borderColor="gray.100"
           >
             <FeatureItem
-              initiated={item.initiated}
-              itemTitle={item.title}
+              initiated={true}
+              itemTitle={item.name}
               dueDate={item.dueDate}
-              value={item.amount + ' USxD'}
-              payProgress={item.paid + ' / ' + item.amount + ' paid'}
-              screen="DummyModal"
+              value={item.value + ' USxD'}
+              payProgress={item.repaid + ' / ' + item.value + ' paid'}
+              screen="RoscaHome"
+              itemParams={{ roscaAddress: item.address }}
             />
           </Box>
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.address}
       />
     </Box>
   )

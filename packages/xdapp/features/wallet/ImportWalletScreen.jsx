@@ -21,6 +21,10 @@ export default function ImportWalletScreen({ navigation }) {
     }
   }
 
+  const wait = (timeout) => {
+    return new Promise((resolve) => setTimeout(resolve, timeout))
+  }
+
   useEffect(() => {
     //set a pending account
     const handlePendingWallet = async () => {
@@ -28,9 +32,11 @@ export default function ImportWalletScreen({ navigation }) {
     }
     if (isLoading) {
       handlePendingWallet()
-      dispatch(importWallet('223344'))
-      navigation.navigate('Loader')
-      setIsLoading(false)
+      wait(1500).then(() => {
+        dispatch(importWallet('223344'))
+        navigation.navigate('Loader')
+        setIsLoading(false)
+      })
     }
   }, [isLoading])
 

@@ -16,8 +16,10 @@ export async function getDefaultNewWalletName() {
 export async function getWallets() {
   if (Object.keys(walletsListCache).length <= 0) {
     const storedWallets = await getUserWallets(WALLETS_STORE)
-    for (const wallet of Array.from(storedWallets)) {
-      Object.assign(walletsListCache, { [wallet.address]: wallet })
+    if (Object.values(storedWallets).length > 0) {
+      for (const wallet of Array.from(storedWallets)) {
+        Object.assign(walletsListCache, { [wallet.address]: wallet })
+      }
     }
   }
   return Object.values(walletsListCache) //Always return a list

@@ -12,12 +12,13 @@ export const essentialListeners = (startListening) => {
       const { isConnected, isLoggedIn } = listenerApi.getState().essential
       const address = listenerApi.getState().wallet.walletInfo.address
       console.log(address)
-      //get private key from store
-      const userWallets = await getWallets()
-      const enPrivateKey = userWallets.find((w) => w.address === address).enPrivateKey
-      const privateKey = await decryptDataWpasscode(enPrivateKey, tempPasscode)
 
       if (isConnected && isLoggedIn) {
+        //get private key from store
+        const userWallets = await getWallets()
+        const enPrivateKey = userWallets.find((w) => w.address === address).enPrivateKey
+        const privateKey = await decryptDataWpasscode(enPrivateKey, tempPasscode)
+
         if (privateKey && action.payload) {
           await setAppSigner(privateKey)
           listenerApi.dispatch(setIsSignered(true))
@@ -25,7 +26,7 @@ export const essentialListeners = (startListening) => {
           console.log('Unable to set signer')
           listenerApi.dispatch(setIsSignered(false))
         }
-      } else {
+      } else if (!isConnected) {
         try {
           await connectToProvider()
           listenerApi.dispatch(setIsConnected(true))

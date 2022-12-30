@@ -57,11 +57,8 @@ const spacesSlice = createSlice({
       state.spaceInfo.ctbAmount = size ? payload / (state.spaceInfo.members.length + 1) : payload
     },
     setUserSpaces: (state, { payload }) => {
-      if (state.spaceInfo.type === 'rosca') {
-        state.userSpaces.roscas.push(payload)
-      } else if (state.spaceInfo.type === 'personal') {
-        state.userSpaces.personal.push(payload)
-      }
+      const roscas = payload.filter((s) => s.type === 'rosca')
+      state.userSpaces.roscas = roscas
     },
     setRoscaDetails: (state, { payload }) => {
       state.roscaDetails = payload
@@ -82,7 +79,7 @@ export const {
 //Created action
 export const getRoscaData = createAction('spaces/getRoscaData')
 export const getRoscaAddress = createAction('spaces/getRoscaAddress')
-export const fetchSpaces = createAction('loans/fetchSpaces')
-export const updateSpaces = createAction('loans/updateSpaces')
+export const fetchSpaces = createAction('spaces/fetchSpaces')
+export const updateSpaces = createAction('spaces/updateSpaces')
 
 export default spacesSlice.reducer

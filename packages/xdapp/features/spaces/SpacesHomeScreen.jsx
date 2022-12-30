@@ -3,22 +3,100 @@ import { useState, useEffect, useCallback } from 'react'
 import { RefreshControl } from 'react-native'
 import { FeatureHomeCard, FeatureItem } from 'xdapp/components'
 import { Feather, Ionicons, MaterialIcons } from '@expo/vector-icons'
+import { useDispatch } from 'react-redux'
+import { fetchSpaces, setUserSpaces } from './spacesSlice'
+import { smartContractCall } from 'xdapp/blockchain/blockchainHelper'
+import { getSpaces } from './spacesManager'
 
 export default function SpacesHomeScreen({ navigation }) {
+  const dispatch = useDispatch()
   const [refreshing, setRefreshing] = useState(false)
-  const totalBalance = 0
+  const [spaces, setSpaces] = useState([])
+  const [challenges, setChallenges] = useState([])
+  const [groups, setGroups] = useState([])
+  const [personal, setPersonal] = useState([])
+  let totalBalance = 0
+  let groupsBal = 0
+  let challengesBal = 0
+  let personalBal = 0
+  useEffect(() => {
+    const fetchMySpaces = async () => {
+      const mySpaces = await smartContractCall('Spaces', {
+        method: 'getMySpaces',
+        methodType: 'read',
+      })
+      const results = await getSpaces()
+      setSpaces(results)
+      dispatch(setUserSpaces(results))
+      const roscas = results.filter((s) => s.type === 'rosca')
+      setGroups(roscas)
+      const personal = results.filter((s) => s.type === 'personal')
+      setPersonal(personal)
+      const challenges = results.filter((s) => s.type === 'challenge')
+      setChallenges(challenges)
+      for (const idx in mySpaces) {
+        if (!results.find((ln) => ln.address === mySpaces[idx][0])) {
+          //console.log(mySpaces[idx])
+          dispatch(fetchSpaces())
+          return
+        }
+      }
+    }
+
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchMySpaces()
+    })
+
+    return unsubscribe
+  }, [navigation])
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout))
   }
+  /*
+  useEffect(() => {
+    dispatch(fetchSpaces())
+  }, []) */
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
+    dispatch(fetchSpaces())
     wait(2000).then(async () => {
+      const results = await getSpaces()
+      setSpaces(results)
+      dispatch(setUserSpaces(results))
+      const roscas = results.filter((s) => s.type === 'rosca')
+      setGroups(roscas)
+      const personal = results.filter((s) => s.type === 'personal')
+      setPersonal(personal)
+      const challenges = results.filter((s) => s.type === 'challenge')
+      setChallenges(challenges)
       setRefreshing(false)
     })
   }, [])
-  const spaces = []
+
+  if (spaces.length > 0) {
+    spaces.forEach((space) => {
+      totalBalance += space.repaid * 1
+    })
+    //wait(1000).then(() => dispatch(updateLoans()))
+  }
+  //Calc segmented balances
+  if (groups.length > 0) {
+    groups.forEach((space) => {
+      groupsBal += space.repaid * 1
+    })
+  }
+  if (challenges.length > 0) {
+    challenges.forEach((space) => {
+      challengesBal += space.repaid * 1
+    })
+  }
+  if (personal.length > 0) {
+    personal.forEach((space) => {
+      personalBal += space.repaid * 1
+    })
+  }
   return (
     <Box flex={1} bg="primary.50" alignItems="center">
       <FlatList
@@ -43,41 +121,8 @@ export default function SpacesHomeScreen({ navigation }) {
               }}
               itemBottom={false}
             />
-            {spaces.length > 0 ? (
-              <HStack justifyContent="space-between" mx={4} mt={3} mb={1}>
-                <Text fontWeight="medium" color="blueGray.600">
-                  Spaces
-                </Text>
-                <Text color="primary.600">See all</Text>
-              </HStack>
-            ) : null}
           </>
         }
-        renderItem={({ item, index }) => (
-          <Box
-            bg="white"
-            opacity={85}
-            roundedTop={index == 0 ? '2xl' : 'md'}
-            roundedBottom={index == spaces.length - 1 ? '2xl' : 'md'}
-            mt={1}
-          >
-            <FeatureItem
-              initiated={true}
-              itemTitle="Masomo"
-              payProgress={
-                (item.repaid * 1).toFixed(2).toString() +
-                '/' +
-                (item.value * 1).toFixed(2).toString() +
-                ' Paid'
-              }
-              value={(item.value * 1).toFixed(2).toString() + ' cUSD'}
-              dueDate={'Due: ' + '2nd Dec 2022'}
-              screen="RoscaHome"
-              itemParams={{ roscaAddress: item.addr }}
-            />
-          </Box>
-        )}
-        keyExtractor={(item) => item.addr}
         ListFooterComponent={
           <>
             <HStack mx={1} justifyContent="space-between" my={4}>
@@ -97,7 +142,12 @@ export default function SpacesHomeScreen({ navigation }) {
                     <Avatar bg="violet.500">
                       <Icon as={MaterialIcons} name="bubble-chart" size="2xl" color="text.50" />
                     </Avatar>
-                    <Text fontSize="md">$0.00</Text>
+                    <VStack>
+                      <Text fontSize="md" alignSelf="flex-end">
+                        ${challengesBal.toFixed(2)}
+                      </Text>
+                      <Text alignSelf="flex-end">≈ ks{(challengesBal * 120.75).toFixed(0)}</Text>
+                    </VStack>
                   </HStack>
                   <Stack>
                     <Text fontSize="md" fontWeight="medium">
@@ -123,7 +173,12 @@ export default function SpacesHomeScreen({ navigation }) {
                     <Avatar bg="teal.500">
                       <Icon as={MaterialIcons} name="lock-clock" size="xl" color="text.50" />
                     </Avatar>
-                    <Text fontSize="md">$0.00</Text>
+                    <VStack>
+                      <Text fontSize="md" alignSelf="flex-end">
+                        ${personalBal.toFixed(2)}
+                      </Text>
+                      <Text alignSelf="flex-end">≈ ks{(personalBal * 120.75).toFixed(0)}</Text>
+                    </VStack>
                   </HStack>
                   <Stack>
                     <Text fontSize="md" fontWeight="medium">
@@ -151,7 +206,12 @@ export default function SpacesHomeScreen({ navigation }) {
                     <Avatar bg="green.500">
                       <Icon as={MaterialIcons} name="groups" size="xl" color="text.50" />
                     </Avatar>
-                    <Text fontSize="md">$0.00</Text>
+                    <VStack>
+                      <Text fontSize="md" alignSelf="flex-end">
+                        ${groupsBal.toFixed(2)}
+                      </Text>
+                      <Text alignSelf="flex-end">≈ ks{(groupsBal * 120.75).toFixed(0)}</Text>
+                    </VStack>
                   </HStack>
                   <Stack>
                     <Text fontSize="md" fontWeight="medium">

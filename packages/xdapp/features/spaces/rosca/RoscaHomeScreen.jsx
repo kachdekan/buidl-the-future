@@ -25,7 +25,7 @@ export default function RoscaHomeScreen({ navigation, route }) {
   const [isFetching, setIsFetching] = useState(false)
 
   useEffect(() => {
-    //dispatch(getRoscaData(roscaAddress))
+    dispatch(getRoscaData(roscaAddress))
   }, [])
 
   useLayoutEffect(() => {
@@ -48,7 +48,7 @@ export default function RoscaHomeScreen({ navigation, route }) {
     return <Spinner size="lg" />
   }
   return (
-    <Box flex={1} bg="muted.100">
+    <Box flex={1} bg="primary.50">
       <Image
         source={{
           uri: roscaDetails.imgLink,
@@ -73,33 +73,32 @@ export default function RoscaHomeScreen({ navigation, route }) {
         </Box>
         <HStack space={2} mt={3}>
           <Button
-            leftIcon={<Icon as={Feather} name="plus" size="md" color="primary.600" mr="1" />}
-            variant="subtle"
+            leftIcon={<Icon as={Feather} name="plus" size="md" color="text.50" mr="1" />}
             rounded="3xl"
             pr="4"
-            _text={{ color: 'primary.600', fontWeight: 'semibold', mb: '0.5' }}
+            size="sm"
+            _text={{ color: 'text.50', fontWeight: 'semibold', mb: '0.5' }}
             onPress={() => navigation.navigate('fundSpace')}
           >
             Fund
           </Button>
           <Button
             leftIcon={
-              <Icon as={Feather} name="arrow-down-right" size="md" color="primary.600" mr="1" />
+              <Icon as={Feather} name="arrow-down-right" size="md" color="text.50" mr="1" />
             }
-            variant="subtle"
             rounded="3xl"
             pr="4"
-            _text={{ color: 'primary.600', fontWeight: 'semibold', mb: '0.5' }}
+            size="sm"
+            _text={{ color: 'text.50', fontWeight: 'semibold', mb: '0.5' }}
           >
             Withdraw
           </Button>
           <Button
-            leftIcon={
-              <Icon as={Feather} name="more-horizontal" size="md" color="primary.600" mx="2" />
-            }
-            variant="subtle"
+            leftIcon={<Icon as={Feather} name="more-horizontal" size="md" color="text.50" mx="2" />}
             rounded="3xl"
-            _text={{ color: 'primary.600', fontWeight: 'semibold', mb: '0.5' }}
+            pr="4"
+            size="sm"
+            _text={{ color: 'text.50', fontWeight: 'semibold', mb: '0.5' }}
           />
         </HStack>
       </Box>

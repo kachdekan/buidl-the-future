@@ -13,7 +13,7 @@ const AuthStack = createNativeStackNavigator()
 export default function AuthNavigator() {
   const dispatch = useDispatch()
   const address = useSelector((s) => s.wallet.walletInfo.address)
-  let hasAccount = true
+  let hasAccount = false
   useEffect(() => {
     if (address) {
       dispatch(setLoggedIn(true))

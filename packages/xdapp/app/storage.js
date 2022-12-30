@@ -37,12 +37,15 @@ export async function storeUserSpace(storeName, userSpaceDetails) {
     return
   }
   const storedSpaces = await getUserSpaces(storeName)
-  if (
-    Array.prototype.find.call(storedSpaces, (space) =>
-      areAddressesEqual(space.address, userSpaceDetails.address),
-    )
-  ) {
-    throw new Error('This space already exists!')
+  if (Object.values(storedSpaces).length > 0) {
+    console.log(storedSpaces)
+    if (
+      Array.prototype.find.call(storedSpaces, (space) =>
+        areAddressesEqual(space.address, userSpaceDetails.address),
+      )
+    ) {
+      throw new Error('This space already exists!')
+    }
   }
   Array.prototype.push.call(storedSpaces, userSpaceDetails)
   const serialised = JSON.stringify(storedSpaces)

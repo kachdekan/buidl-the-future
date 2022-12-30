@@ -6,7 +6,7 @@ import spacesReducer from '../features/spaces/spacesSlice'
 
 import { essentialListeners } from '../features/essentials/essentialEffects'
 import { walletListeners } from '../features/wallet/walletEffects'
-//import { spacesListeners } from '../features/spaces/spacesEffects'
+import { spacesListeners } from '../features/spaces/spacesEffects'
 
 import { blockscoutApi } from './services/blockscout'
 import { newsdataApi } from './services/newsdata'
@@ -32,4 +32,4 @@ export default configureStore({
 //Listeners
 essentialListeners(listenerMiddleware.startListening)
 walletListeners(listenerMiddleware.startListening)
-//spacesListeners(listenerMiddleware.startListening)
+spacesListeners(listenerMiddleware.startListening)
