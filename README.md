@@ -12,9 +12,9 @@ We have found out that the “take it or leave it” approach to financial produ
 
 #### Demo
 
-- Watch the [Live Demo](https://youtu.be/_-OuI6YpsRs).
+- Watch the [Live Demo](https://youtu.be/zHz8im_Acnc).
 
-- Try it yourself. [Clixpesa App](https://expo.dev/@kachdn/xdapp?serviceType=classic&distribution=expo-go)
+- Try it yourself. [xDapp App](https://expo.dev/@kachdn/xdapp?serviceType=classic&distribution=expo-go)
 _ps: to run the app, you will need an [expo go app](https://expo.dev/client) installed._
   _scan the [qr code](https://expo.dev/@kachdn/xdapp?serviceType=classic&distribution=expo-go) with your phone's camera or with expo go. Enjoy!_
   
