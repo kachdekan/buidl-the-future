@@ -1,4 +1,4 @@
-import deployed from './Abis/Jsons/deployed.json'
+const deployed = require('../blockchain/Abis/Jsons/deployed.json')
 
 const configXDCApothem = {
   jsonRpcUrlPrimary: 'https://erpc.apothem.network',
