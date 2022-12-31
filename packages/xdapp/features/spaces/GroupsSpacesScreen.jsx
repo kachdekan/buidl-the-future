@@ -1,10 +1,12 @@
 import { Box, FlatList, Text } from 'native-base'
 import { RefreshControl } from 'react-native'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useLayoutEffect } from 'react'
 import { SectionHeader, PopularItem, FeatureItem } from 'xdapp/components'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { updateSpaces } from './spacesSlice'
 
 export default function GroupsSpacesScreen() {
+  const dispatch = useDispatch()
   const [refreshing, setRefreshing] = useState(false)
   const myGroupsSpaces = useSelector((s) => s.spaces.userSpaces.roscas)
   const wait = (timeout) => {
@@ -13,6 +15,7 @@ export default function GroupsSpacesScreen() {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
+    dispatch(updateSpaces())
     wait(2000).then(async () => {
       setRefreshing(false)
     })

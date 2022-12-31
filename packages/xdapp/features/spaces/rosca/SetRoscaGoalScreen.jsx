@@ -93,7 +93,7 @@ export default function SetRoscaGoalScreen({ navigation, route }) {
         authCode: results.args[2][3],
       }
       setNewRosca(roscaDetails)
-      dispatch(setUserSpaces(results.args.roscaAddress))
+      //dispatch(setUserSpaces(results.args.roscaAddress))
       onOpen1()
     }
   }

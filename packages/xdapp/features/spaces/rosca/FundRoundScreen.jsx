@@ -135,7 +135,7 @@ export default function FundRoundScreen({ route }) {
           roscaAddress ? shortenAddress(roscaAddress, true) : 'xdc0...000'
         }`}
         screen="RoscaHome"
-        scrnOptions={roscaAddress}
+        scrnOptions={{ roscaAddress }}
       />
     </Box>
   )

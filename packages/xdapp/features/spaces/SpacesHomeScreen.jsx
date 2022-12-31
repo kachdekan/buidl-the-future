@@ -4,7 +4,7 @@ import { RefreshControl } from 'react-native'
 import { FeatureHomeCard, FeatureItem } from 'xdapp/components'
 import { Feather, Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { useDispatch } from 'react-redux'
-import { fetchSpaces, setUserSpaces } from './spacesSlice'
+import { fetchSpaces, setUserSpaces, updateSpaces } from './spacesSlice'
 import { smartContractCall } from 'xdapp/blockchain/blockchainHelper'
 import { getSpaces } from './spacesManager'
 
@@ -79,7 +79,7 @@ export default function SpacesHomeScreen({ navigation }) {
     spaces.forEach((space) => {
       totalBalance += space.repaid * 1
     })
-    //wait(1000).then(() => dispatch(updateLoans()))
+    wait(1000).then(() => dispatch(updateSpaces()))
   }
   //Calc segmented balances
   if (groups.length > 0) {
